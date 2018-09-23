@@ -1,0 +1,12 @@
+.idea/
+target/
+venv/
+*.iml
+*.ipr
+*.iws
+*.class
+*.jar
+*.war
+*.ear
+*.logs
+.eclipse
