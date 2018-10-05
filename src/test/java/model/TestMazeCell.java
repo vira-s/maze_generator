@@ -51,16 +51,4 @@ public class TestMazeCell {
 
         Assert.assertTrue("Cell must be visited " + cell, cell.isVisited());
     }
-
-    @Test(expected = IllegalArgumentException.class)
-    public void testMarkAsVisited_alreadyVisited() {
-        Assert.assertFalse("Cell must not be visited " + cell, cell.isVisited());
-
-        cell.markAsVisited();
-        Assert.assertTrue("Cell must be visited " + cell, cell.isVisited());
-
-        cell.markAsVisited();
-    }
-
-
 }

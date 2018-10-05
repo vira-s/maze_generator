@@ -19,20 +19,20 @@ public class MazeCell {
 
     private static final Logger LOGGER = LogManager.getLogger(MazeCell.class);
 
-    private final int row;
-
     private final int column;
+
+    private final int row;
 
     private boolean visited;
 
     private List<Wall> walls;
 
-    public MazeCell(int row, int column) {
-        Assert.isTrue(row >= 0, "Row must be non-negative.");
+    public MazeCell(int column,int row) {
         Assert.isTrue(column >= 0, "Column must be non-negative.");
+        Assert.isTrue(row >= 0, "Row must be non-negative.");
 
-        this.row = row;
         this.column = column;
+        this.row = row;
         this.visited = false;
         this.walls = Arrays.asList(
                 new Wall(WallPosition.NORTH),
@@ -41,12 +41,12 @@ public class MazeCell {
                 new Wall(WallPosition.WEST));
     }
 
-    public int getRow() {
-        return row;
-    }
-
     public int getColumn() {
         return column;
+    }
+
+    public int getRow() {
+        return row;
     }
 
     public boolean isVisited() {
@@ -68,7 +68,7 @@ public class MazeCell {
         Assert.notNull(position, "Position must not be null.");
 
         List<Wall> filteredWalls = this.walls.stream()
-                .filter(wall -> wall.getPosition().equals(WallPosition.SOUTH))
+                .filter(wall -> wall.getPosition().equals(position))
                 .collect(Collectors.toList());
         Assert.isTrue(filteredWalls.size() == 1, "Exactly one wall must be matching. " + filteredWalls);
 
@@ -91,7 +91,7 @@ public class MazeCell {
                         : wall)
                 .collect(Collectors.toList());
 
-        LOGGER.debug("Walls: " + walls);
+        LOGGER.debug("Cell: " + this);
     }
 
     /**
@@ -100,9 +100,98 @@ public class MazeCell {
     public void markAsVisited() {
         LOGGER.info("Marking cell " + this + " visited.");
 
-        Assert.isTrue(!this.visited, "Cell is already visited. " + this);
-
         this.visited = true;
+    }
+
+    /**
+     * Decides if this cell is a neighbour of the provided {@link MazeCell}.
+     *
+     * @param mazeCell The cell
+     *
+     * @return True if the current {@link MazeCell} is a neighbour of the provided one.
+     */
+    public boolean isNeighbourOf(MazeCell mazeCell) {
+        Assert.notNull(mazeCell, "mazeCell should not be null.");
+
+        return isVerticalNeighbourOf(mazeCell) || isHorizontalNeighbourOf(mazeCell);
+    }
+
+    /**
+     * Decides if this cell is a vertical neighbour of the provided {@link MazeCell}.
+     *
+     * @param mazeCell The cell
+     *
+     * @return True if the current {@link MazeCell} is a vertical neighbour of the provided one.
+     */
+    public boolean isVerticalNeighbourOf(MazeCell mazeCell) {
+        Assert.notNull(mazeCell, "mazeCell should not be null.");
+
+        return isLowerNeighbourOf(mazeCell) || isUpperNeighbourOf(mazeCell);
+    }
+
+    /**
+     * Decides if this cell is the south-side neighbour of the provided {@link MazeCell}.
+     *
+     * @param mazeCell The cell
+     *
+     * @return True if the current {@link MazeCell} is the south-side neighbour of the provided one.
+     */
+    public boolean isLowerNeighbourOf(MazeCell mazeCell) {
+        Assert.notNull(mazeCell, "mazeCell should not be null.");
+
+        return this.column == mazeCell.getColumn() && this.row == (mazeCell.getRow() + 1);
+    }
+
+    /**
+     * Decides if this cell is the north-side neighbour of the provided {@link MazeCell}.
+     *
+     * @param mazeCell The cell
+     *
+     * @return True if the current {@link MazeCell} is the north-side neighbour of the provided one.
+     */
+    public boolean isUpperNeighbourOf(MazeCell mazeCell) {
+        Assert.notNull(mazeCell, "mazeCell should not be null.");
+
+        return this.column == mazeCell.getColumn() && this.row == (mazeCell.getRow() - 1);
+    }
+
+    /**
+     * Decides if this cell is a horizontal neighbour of the provided {@link MazeCell}.
+     *
+     * @param mazeCell The cell
+     *
+     * @return True if the current {@link MazeCell} is a horizontal neighbour of the provided one.
+     */
+    public boolean isHorizontalNeighbourOf(MazeCell mazeCell) {
+        Assert.notNull(mazeCell, "mazeCell should not be null.");
+
+        return isLeftNeighbourOf(mazeCell) || isRightNeighbourOf(mazeCell);
+    }
+
+    /**
+     * Decides if this cell is the west-side neighbour of the provided {@link MazeCell}.
+     *
+     * @param mazeCell The cell
+     *
+     * @return True if the current {@link MazeCell} is the west-side neighbour of the provided one.
+     */
+    public boolean isLeftNeighbourOf(MazeCell mazeCell) {
+        Assert.notNull(mazeCell, "mazeCell should not be null.");
+
+        return this.row == mazeCell.getRow() && this.column == (mazeCell.getColumn() - 1);
+    }
+
+    /**
+     * Decides if this cell is the east-side neighbour of the provided {@link MazeCell}.
+     *
+     * @param mazeCell The cell
+     *
+     * @return True if the current {@link MazeCell} is the east-side neighbour of the provided one.
+     */
+    public boolean isRightNeighbourOf(MazeCell mazeCell) {
+        Assert.notNull(mazeCell, "mazeCell should not be null.");
+
+        return this.row == mazeCell.getRow() && this.column == (mazeCell.getColumn() + 1);
     }
 
     @Override
@@ -114,22 +203,20 @@ public class MazeCell {
             return false;
         }
         MazeCell cell = (MazeCell) other;
-        return row == cell.row &&
-                column == cell.column
-                && visited == cell.visited
-                && Objects.equals(walls, cell.walls);
+        return  column == cell.column
+                && row == cell.row;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(row, column, visited, walls);
+        return Objects.hash(column, row);
     }
 
     @Override
     public String toString() {
         return "MazeCell{"
-                + "row=" + row
-                + ", column=" + column
+                + "column=" + column
+                + ", row=" + row
                 + ", visited=" + visited
                 + ", walls=" + walls
                 + '}';

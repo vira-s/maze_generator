@@ -3,7 +3,6 @@ package model;
 import model.cell.MazeCell;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -45,12 +44,13 @@ public class TestMaze {
         MazeCell result = maze.getCellByCoordinates(COLUMN - 1, ROW + 1);
     }
 
-    @Ignore
     @Test
     public void testGetCellByCoordinates() {
+        MazeCell expected = new MazeCell(COLUMN - 1, ROW - 1);
         MazeCell result = maze.getCellByCoordinates(COLUMN - 1, ROW - 1);
 
         Assert.assertNotNull("Result must not be null.", result);
+        Assert.assertEquals(expected, result);
     }
 
 }
