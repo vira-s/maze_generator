@@ -1,13 +1,13 @@
-package model.generator;
+package graph.generator;
 
 import model.Maze;
-import model.cell.MazeCell;
 import model.cell.WallPosition;
+import model.graph.CellNode;
 
 /**
  * Interface to collect the common functionality of the generators.
  *
- * @author Viktoria Sinkovics on 10/1/2018
+ * @author Viktoria Sinkovics
  */
 public abstract class MazeGenerator {
 
@@ -21,17 +21,9 @@ public abstract class MazeGenerator {
 
         for (int row = 0; row < rows; row++) {
 
-            // TOP
             builder.append(generateTextForTop(maze, columns, row));
-            builder.append("\n");
-
-            // MIDDLE
             builder.append(generateTextForMiddle(maze, columns, row));
-            builder.append("\n");
-
-            // BOTTOM
             builder.append(generateTextForBottom(maze, columns, row));
-            builder.append("\n");
         }
 
         return builder.toString();
@@ -41,13 +33,14 @@ public abstract class MazeGenerator {
         StringBuilder builder = new StringBuilder();
 
         for (int col = 0; col < columns; col++) {
-            MazeCell current = maze.getCellByCoordinates(col, row);
+            CellNode current = maze.getCellNodeByCoordinates(col, row);
             if (current.getWallByPosition(WallPosition.NORTH).isVisible()) {
                 builder.append("###");
             } else {
                 builder.append("#.#");
             }
         }
+        builder.append("\n");
         return builder.toString();
     }
 
@@ -55,7 +48,7 @@ public abstract class MazeGenerator {
         StringBuilder builder = new StringBuilder();
 
         for (int col = 0; col < columns; col++) {
-            MazeCell current = maze.getCellByCoordinates(col, row);
+            CellNode current = maze.getCellNodeByCoordinates(col, row);
 
             if (current.getWallByPosition(WallPosition.EAST).isVisible()
                     && current.getWallByPosition(WallPosition.WEST).isVisible()) {
@@ -71,7 +64,7 @@ public abstract class MazeGenerator {
                 builder.append("...");
             }
         }
-
+        builder.append("\n");
         return builder.toString();
     }
 
@@ -79,7 +72,7 @@ public abstract class MazeGenerator {
         StringBuilder builder = new StringBuilder();
 
         for (int col = 0; col < columns; col++) {
-            MazeCell current = maze.getCellByCoordinates(col, row);
+            CellNode current = maze.getCellNodeByCoordinates(col, row);
 
             if (current.getWallByPosition(WallPosition.SOUTH).isVisible()) {
                 builder.append("###");
@@ -87,7 +80,7 @@ public abstract class MazeGenerator {
                 builder.append("#.#");
             }
         }
-
+        builder.append("\n");
         return builder.toString();
     }
 

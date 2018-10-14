@@ -1,6 +1,8 @@
 package model;
 
+import graph.generator.RecursiveBacktrackerGenerator;
 import model.cell.MazeCell;
+import model.graph.CellNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -8,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
 /**
- * @author Viktoria Sinkovics on 10/1/2018
+ * @author Viktoria Sinkovics
  */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class TestMaze {
@@ -26,31 +28,37 @@ public class TestMaze {
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetCellByCoordinates_negativeColumn() {
-        MazeCell result = maze.getCellByCoordinates(COLUMN - 1, -1);
+        CellNode result = maze.getCellNodeByCoordinates(COLUMN - 1, -1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetCellByCoordinates_negativeRow() {
-        MazeCell result = maze.getCellByCoordinates(-1, ROW - 1);
+        CellNode result = maze.getCellNodeByCoordinates(-1, ROW - 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetCellByCoordinates_biggerColumnPositionThanAllowed() {
-        MazeCell result = maze.getCellByCoordinates(COLUMN + 1, ROW - 1);
+        CellNode result = maze.getCellNodeByCoordinates(COLUMN + 1, ROW - 1);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testGetCellByCoordinates_biggerRowPositionThanAllowed() {
-        MazeCell result = maze.getCellByCoordinates(COLUMN - 1, ROW + 1);
+        CellNode result = maze.getCellNodeByCoordinates(COLUMN - 1, ROW + 1);
     }
 
     @Test
     public void testGetCellByCoordinates() {
-        MazeCell expected = new MazeCell(COLUMN - 1, ROW - 1);
-        MazeCell result = maze.getCellByCoordinates(COLUMN - 1, ROW - 1);
+        CellNode expected = new CellNode(new MazeCell(COLUMN - 1, ROW - 1));
+        CellNode result = maze.getCellNodeByCoordinates(COLUMN - 1, ROW - 1);
 
         Assert.assertNotNull("Result must not be null.", result);
         Assert.assertEquals(expected, result);
+    }
+
+    @Test
+    public void test() {
+        RecursiveBacktrackerGenerator recursiveBacktrackerGenerator = new RecursiveBacktrackerGenerator();
+        recursiveBacktrackerGenerator.generate(10, 10);
     }
 
 }

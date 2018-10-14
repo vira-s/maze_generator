@@ -10,7 +10,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
 
 /**
- * @author Viktoria Sinkovics on 10/1/2018
+ * @author Viktoria Sinkovics
  */
 @RunWith(BlockJUnit4ClassRunner.class)
 public class TestMazeCell {

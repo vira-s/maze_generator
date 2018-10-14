@@ -2,10 +2,13 @@ package model;
 
 
 import model.cell.MazeCell;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import model.graph.CellNode;
+import model.graph.Node;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
 
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -15,7 +18,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a maze object.
  *
- * @author Viktoria Sinkovics on 10/1/2018
+ * @author Viktoria Sinkovics
  */
 public class Maze {
 
@@ -29,7 +32,7 @@ public class Maze {
 
     private final int rows;
 
-    private List<MazeCell> grid;
+    private List<CellNode> nodes;
 
     public Maze(int columns, int rows) {
         Assert.isTrue(columns > 0, "Columns must be positive.");
@@ -37,19 +40,19 @@ public class Maze {
 
         this.columns = columns;
         this.rows = rows;
-        this.grid = initializeGrid(columns, rows);
+        this.nodes = initializeNodes(columns, rows);
     }
 
-    public Maze(int rows, int columns, List<MazeCell> grid) {
+    public Maze(int rows, int columns, List<CellNode> nodes) {
         Assert.isTrue(columns > 0, "Columns must be positive.");
         Assert.isTrue(rows > 0, "Rows must be positive.");
-        Assert.notEmpty(grid, "Grid must not be empty.");
-        Assert.isTrue(grid.size() == columns * rows,
-                "Unexpected grid size (" + grid.size() + "), should be (" + columns * rows + ").");
+        Assert.notEmpty(nodes, "Grid must not be empty.");
+        Assert.isTrue(nodes.size() == columns * rows,
+                "Unexpected nodes size (" + nodes.size() + "), should be (" + columns * rows + ").");
 
         this.rows = rows;
         this.columns = columns;
-        this.grid = grid;
+        this.nodes = nodes;
     }
 
     public int getRows() {
@@ -60,8 +63,8 @@ public class Maze {
         return columns;
     }
 
-    public List<MazeCell> getGrid() {
-        return grid;
+    public List<CellNode> getNodes() {
+        return nodes;
     }
 
     /**
@@ -72,21 +75,17 @@ public class Maze {
      *
      * @return The {@link MazeCell} with the matching position
      */
-    public MazeCell getCellByCoordinates(int column, int row) {
+    public CellNode getCellNodeByCoordinates(int column, int row) {
         Assert.isTrue(column >= 0, "Column must be non-negative.");
         Assert.isTrue(this.columns > column, "Column must be smaller than " + this.columns + ".");
         Assert.isTrue(row >= 0, "Row must be non-negative.");
         Assert.isTrue(this.rows > row, "Row must be smaller than " + this.rows + ".");
 
-        LOGGER.info("Received coordinates: column=" + column + ", row=" + row + ".");
-
-        List<MazeCell> cellsAtCoordinate = grid.stream()
-                .filter(cell -> cell.getColumn() == column && cell.getRow() == row)
+        List<CellNode> cellsAtCoordinate = nodes.stream()
+                .filter(cellNode -> cellNode.getColumn() == column && cellNode.getRow() == row)
                 .collect(Collectors.toList());
 
         Assert.isTrue(cellsAtCoordinate.size() == 1, "Exactly one cell must be found: " + cellsAtCoordinate);
-
-        LOGGER.info("Found cell by coordinates (" + column + "," + row + "): " + cellsAtCoordinate.get(0));
 
         return cellsAtCoordinate.get(0);
     }
@@ -98,54 +97,91 @@ public class Maze {
      *
      * @return The neighbours of the provided {@link MazeCell}
      */
-    public List<MazeCell> findNeighboursOf(MazeCell mazeCell) {
+    public List<CellNode> findNeighboursOf(MazeCell mazeCell) {
         Assert.notNull(mazeCell, "mazeCell should not be null.");
 
-        LOGGER.info("Looking for neighbours of " + mazeCell);
+        LOGGER.info("Looking for neighbours of {}", mazeCell);
 
-        return grid.stream()
-                .filter(cell -> cell.isNeighbourOf(mazeCell))
+        return nodes.stream()
+                .filter(cellNode -> cellNode.isNeighbourOf(mazeCell))
                 .collect(Collectors.toList());
     }
 
-    public List<MazeCell> findUnvisitedNeighboursOf(MazeCell mazeCell) {
+    /**
+     * Retrieves the given {@link MazeCell}'s unvisited neighbours.
+     *
+     * @param mazeCell The {@link MazeCell}
+     *
+     * @return The unvisited neighbours or an empty {@link List}
+     */
+    public List<CellNode> findUnvisitedNeighboursOf(MazeCell mazeCell) {
         Assert.notNull(mazeCell, "mazeCell should not be null.");
 
-        LOGGER.info("Looking for unvisited neighbours of " + mazeCell);
+        LOGGER.info("Looking for unvisited neighbours of {}", mazeCell);
 
         return findNeighboursOf(mazeCell).stream()
-                .filter(cell -> !cell.isVisited())
+                .filter(cellNode -> !cellNode.isVisited())
                 .collect(Collectors.toList());
     }
 
-    public MazeCell getStartPoint(boolean random) {
-        MazeCell startCell;
+    /**
+     * Selects a start point for the {@link graph.generator.MazeGenerator}.
+     *
+     * @param random If the start point should be selected at random, or use the default (0,0) point
+     *
+     * @return The {@link CellNode} to start from
+     */
+    public CellNode selectStartPoint(boolean random) {
+        CellNode startCellNode;
 
         if (random) {
-            Random randomNumber = new Random();
+            Random randomNumber = new SecureRandom();
 
             int randomColumn = randomNumber.nextInt(columns);
             int randomRow = randomNumber.nextInt(rows);
 
-            startCell = getCellByCoordinates(randomColumn, randomRow);
+            startCellNode = getCellNodeByCoordinates(randomColumn, randomRow);
         } else {
-            startCell = getCellByCoordinates(DEFAULT_START_COLUMN, DEFAULT_START_ROW);
+            startCellNode = getCellNodeByCoordinates(DEFAULT_START_COLUMN, DEFAULT_START_ROW);
         }
 
-        return startCell;
+        return startCellNode;
     }
 
-    private List<MazeCell> initializeGrid(int columns, int rows) {
-        List<MazeCell> grid = new ArrayList<>();
+    /**
+     * Retrieves the starting point/root of the maze.
+     *
+     * @return The root
+     */
+    public CellNode findRoot() {
+        List<CellNode> rootCells = this.nodes.stream()
+                .filter(Node::isRoot)
+                .collect(Collectors.toList());
+
+        Assert.isTrue(rootCells.size() == 1, "Exactly one root cell is required. " + rootCells);
+
+        return rootCells.get(0);
+    }
+
+    /**
+     * Prints the maze to the console in a vertical graph format.
+     */
+    public void printMazeGraph() {
+        this.findRoot().print("", true);
+    }
+
+    private List<CellNode> initializeNodes(int columns, int rows) {
+        List<CellNode> nodes = new ArrayList<>();
 
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
                 MazeCell cell = new MazeCell(column, row);
-                grid.add(cell);
+                CellNode cellNode = new CellNode(cell);
+                nodes.add(cellNode);
             }
         }
 
-        return grid;
+        return nodes;
     }
 
     @Override
@@ -159,12 +195,12 @@ public class Maze {
         Maze maze = (Maze) other;
         return rows == maze.rows
                 && columns == maze.columns
-                && Objects.equals(grid, maze.grid);
+                && Objects.equals(nodes, maze.nodes);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(rows, columns, grid);
+        return Objects.hash(rows, columns, nodes);
     }
 
     @Override
@@ -172,7 +208,8 @@ public class Maze {
         return "Maze{"
                 + "rows=" + rows
                 + ", columns=" + columns
-                + ", grid=" + grid
+                + ", nodes=" + nodes
                 + '}';
     }
+
 }

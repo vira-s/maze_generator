@@ -1,9 +1,9 @@
 package model.cell;
 
-import model.exception.UnknownWallPositionException;
+import exception.UnknownWallPositionException;
 
 /**
- * @author Viktoria Sinkovics on 10/1/2018
+ * @author Viktoria Sinkovics
  */
 public enum WallPosition {
 

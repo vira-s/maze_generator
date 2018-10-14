@@ -1,7 +1,7 @@
-package model.exception;
+package exception;
 
 /**
- * @author Viktoria Sinkovics on 10/5/2018
+ * @author Viktoria Sinkovics
  */
 public class UnknownWallPositionException extends RuntimeException {
 

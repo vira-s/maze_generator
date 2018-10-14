@@ -1,11 +1,13 @@
-package model.generator;
+package graph.generator;
 
 import model.Maze;
-import model.cell.MazeCell;
 import model.cell.WallPosition;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import model.graph.CellNode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.util.Assert;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -14,13 +16,13 @@ import java.util.Stack;
 /**
  * Maze generator that implements the recursive backtracker algorithm.
  *
- * @author Viktoria Sinkovics on 10/3/2018
+ * @author Viktoria Sinkovics
  */
 public class RecursiveBacktrackerGenerator extends MazeGenerator {
 
     private static final Logger LOGGER = LogManager.getLogger(RecursiveBacktrackerGenerator.class);
 
-    private Stack<MazeCell> cells;
+    private Stack<CellNode> cells;
 
     public RecursiveBacktrackerGenerator() {
         cells = new Stack<>();
@@ -28,21 +30,28 @@ public class RecursiveBacktrackerGenerator extends MazeGenerator {
 
     @Override
     public Maze generate(int columns, int rows) {
+        Assert.isTrue(columns > 0, "Columns must be positive.");
+        Assert.isTrue(rows > 0, "Rows must be positive.");
 
         Maze maze = new Maze(columns, rows);
 
-        MazeCell currentCell = maze.getStartPoint(false);
-        MazeCell nextCell;
-        Random randomNeighbourIndex = new Random();
+        CellNode currentCell = maze.selectStartPoint(true);
+        currentCell.setParent(null);
+        currentCell.makeRoot();
+
+        CellNode nextCell;
+        Random randomNeighbourIndex = new SecureRandom();
         do {
-            List<MazeCell> unvisitedNeighbours = maze.findUnvisitedNeighboursOf(currentCell);
-            Optional<MazeCell> anyUnvisitedNeighbour = unvisitedNeighbours.isEmpty()
+            List<CellNode> unvisitedNeighbours = maze.findUnvisitedNeighboursOf(currentCell.getEntity());
+            Optional<CellNode> anyUnvisitedNeighbour = unvisitedNeighbours.isEmpty()
                     ? Optional.empty()
                     : Optional.ofNullable(unvisitedNeighbours.get(randomNeighbourIndex.nextInt(unvisitedNeighbours.size())));
 
             currentCell.markAsVisited();
             if (anyUnvisitedNeighbour.isPresent()) {
                 nextCell = anyUnvisitedNeighbour.get();
+                nextCell.setParent(currentCell);
+                currentCell.addChild(nextCell);
 
                 if (currentCell.isUpperNeighbourOf(nextCell)) {
                     currentCell.removeWall(WallPosition.SOUTH);
@@ -68,7 +77,7 @@ public class RecursiveBacktrackerGenerator extends MazeGenerator {
             }
         } while (!cells.isEmpty());
 
-        LOGGER.info(generateMazeText(maze));
+        LOGGER.debug(generateMazeText(maze));
 
         return maze;
     }

@@ -1,8 +1,8 @@
 package model.cell;
 
 import model.Maze;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
 
 import java.util.Arrays;
@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 /**
  * Represents a cell in the {@link Maze}. A cell has a fixed position, four walls and is either visited or not.
  *
- * @author Viktoria Sinkovics on 10/1/2018
+ * @author Viktoria Sinkovics
  */
 public class MazeCell {
 
@@ -27,7 +27,7 @@ public class MazeCell {
 
     private List<Wall> walls;
 
-    public MazeCell(int column,int row) {
+    public MazeCell(int column, int row) {
         Assert.isTrue(column >= 0, "Column must be non-negative.");
         Assert.isTrue(row >= 0, "Row must be non-negative.");
 
@@ -60,9 +60,9 @@ public class MazeCell {
     /**
      * Retrieves a {@link Wall} by its {@link WallPosition}.
      *
-     * @param position
+     * @param position The position of the wall
      *
-     * @return
+     * @return The {@link Wall} at the matching {@link WallPosition}
      */
     public Wall getWallByPosition(WallPosition position) {
         Assert.notNull(position, "Position must not be null.");
@@ -83,7 +83,7 @@ public class MazeCell {
     public void removeWall(final WallPosition position) {
         Assert.notNull(position, "Position should not be null");
 
-        LOGGER.info("Removing wall from " + position + " side.");
+        LOGGER.info("Removing wall from {} side.", position);
 
         this.walls = this.walls.stream()
                 .map(wall -> wall.getPosition().equals(position)
@@ -91,14 +91,14 @@ public class MazeCell {
                         : wall)
                 .collect(Collectors.toList());
 
-        LOGGER.debug("Cell: " + this);
+        LOGGER.debug("Cell: {}", this);
     }
 
     /**
      * Marks the cell as already visited.
      */
     public void markAsVisited() {
-        LOGGER.info("Marking cell " + this + " visited.");
+        LOGGER.info("Marking cell {} visited.", this);
 
         this.visited = true;
     }

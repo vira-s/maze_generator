@@ -7,7 +7,7 @@ import java.util.Objects;
 /**
  * Represents one wall of a {@link MazeCell}.
  *
- * @author Viktoria Sinkovics on 10/1/2018
+ * @author Viktoria Sinkovics
  */
 public class Wall {
 
