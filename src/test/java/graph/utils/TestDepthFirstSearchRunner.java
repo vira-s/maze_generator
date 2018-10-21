@@ -4,11 +4,14 @@ import model.Maze;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import utils.DummyFactory;
 
 /**
  * @author Viktoria Sinkovics
  */
+@RunWith(BlockJUnit4ClassRunner.class)
 public class TestDepthFirstSearchRunner {
 
     private DepthFirstSearchRunner depthFirstSearchRunnerUT;

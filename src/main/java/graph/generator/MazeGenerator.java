@@ -9,79 +9,28 @@ import model.graph.CellNode;
  *
  * @author Viktoria Sinkovics
  */
-public abstract class MazeGenerator {
+public abstract class MazeGenerator extends MazeTextGenerator {
 
     abstract Maze generate(int columns, int rows);
 
-    public static String generateMazeText(Maze maze) {
-        int rows = maze.getRows();
-        int columns = maze.getColumns();
+    protected void removeWalls(CellNode currentCell, CellNode nextCell) {
+        if (currentCell.isUpperNeighbourOf(nextCell)) {
+            currentCell.removeWall(WallPosition.SOUTH);
+            nextCell.removeWall(WallPosition.SOUTH.opposite());
 
-        StringBuilder builder = new StringBuilder("\n");
+        } else if (currentCell.isLowerNeighbourOf(nextCell)) {
+            currentCell.removeWall(WallPosition.NORTH);
+            nextCell.removeWall(WallPosition.NORTH.opposite());
 
-        for (int row = 0; row < rows; row++) {
+        } else if (currentCell.isLeftNeighbourOf(nextCell)) {
+            currentCell.removeWall(WallPosition.EAST);
+            nextCell.removeWall(WallPosition.EAST.opposite());
 
-            builder.append(generateTextForTop(maze, columns, row));
-            builder.append(generateTextForMiddle(maze, columns, row));
-            builder.append(generateTextForBottom(maze, columns, row));
+        } else if (currentCell.isRightNeighbourOf(nextCell)) {
+            currentCell.removeWall(WallPosition.WEST);
+            nextCell.removeWall(WallPosition.WEST.opposite());
         }
-
-        return builder.toString();
     }
 
-    private static String generateTextForTop(Maze maze, int columns, int row) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int col = 0; col < columns; col++) {
-            CellNode current = maze.getCellNodeByCoordinates(col, row);
-            if (current.getWallByPosition(WallPosition.NORTH).isVisible()) {
-                builder.append("###");
-            } else {
-                builder.append("#.#");
-            }
-        }
-        builder.append("\n");
-        return builder.toString();
-    }
-
-    private static String generateTextForMiddle(Maze maze, int columns, int row) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int col = 0; col < columns; col++) {
-            CellNode current = maze.getCellNodeByCoordinates(col, row);
-
-            if (current.getWallByPosition(WallPosition.EAST).isVisible()
-                    && current.getWallByPosition(WallPosition.WEST).isVisible()) {
-                builder.append("#.#");
-            } else if (!current.getWallByPosition(WallPosition.EAST).isVisible()
-                    && current.getWallByPosition(WallPosition.WEST).isVisible()) {
-                builder.append("#..");
-            } else if (current.getWallByPosition(WallPosition.EAST).isVisible()
-                    && !current.getWallByPosition(WallPosition.WEST).isVisible()) {
-                builder.append("..#");
-            } else if (!current.getWallByPosition(WallPosition.EAST).isVisible()
-                    && !current.getWallByPosition(WallPosition.WEST).isVisible()) {
-                builder.append("...");
-            }
-        }
-        builder.append("\n");
-        return builder.toString();
-    }
-
-    private static String generateTextForBottom(Maze maze, int columns, int row) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int col = 0; col < columns; col++) {
-            CellNode current = maze.getCellNodeByCoordinates(col, row);
-
-            if (current.getWallByPosition(WallPosition.SOUTH).isVisible()) {
-                builder.append("###");
-            } else {
-                builder.append("#.#");
-            }
-        }
-        builder.append("\n");
-        return builder.toString();
-    }
 
 }

@@ -13,6 +13,11 @@ import java.util.List;
  */
 public class DummyFactory {
 
+    public static final int DEFAULT_COLUMNS = 10;
+
+    public static final int DEFAULT_ROWS = 10;
+
+
     public static List<CellNode> getCyclicNodes() {
         CellNode first = new CellNode(new MazeCell(0, 0));
         CellNode second = new CellNode(new MazeCell(1, 0));

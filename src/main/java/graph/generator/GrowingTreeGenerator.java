@@ -7,28 +7,28 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
 
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Stack;
 
 /**
- * Maze generator that implements the recursive backtracker algorithm.
+ * Maze generator that implements the growing tree algorithm.
  *
  * @author Viktoria Sinkovics
  */
-public class RecursiveBacktrackerGenerator extends MazeGenerator {
+public class GrowingTreeGenerator extends MazeGenerator {
 
-    private static final Logger LOGGER = LogManager.getLogger(RecursiveBacktrackerGenerator.class);
+    private static final Logger LOGGER = LogManager.getLogger(GrowingTreeGenerator.class);
 
-    private Stack<CellNode> cells;
+    List<CellNode> carvedCells;
 
-    public RecursiveBacktrackerGenerator() {
-        cells = new Stack<>();
+    public GrowingTreeGenerator() {
+        carvedCells = new ArrayList<>();
     }
 
     @Override
-    public Maze generate(int columns, int rows) {
+    Maze generate(int columns, int rows) {
         Assert.isTrue(columns > 0, "Columns must be positive.");
         Assert.isTrue(rows > 0, "Rows must be positive.");
 
@@ -36,16 +36,21 @@ public class RecursiveBacktrackerGenerator extends MazeGenerator {
 
         CellNode currentCell = maze.selectStartPoint(true);
         currentCell.makeRoot();
+        currentCell.markAsVisited();
+        carvedCells.add(currentCell);
 
         CellNode nextCell;
         Random randomNeighbourIndex = new SecureRandom();
+        Random randomCarvedCellIndex = new SecureRandom();
+
         do {
+            currentCell = carvedCells.get(randomCarvedCellIndex.nextInt(carvedCells.size()));
+
             List<CellNode> unvisitedNeighbours = maze.findUnvisitedNeighboursOf(currentCell.getEntity());
             Optional<CellNode> anyUnvisitedNeighbour = unvisitedNeighbours.isEmpty()
                     ? Optional.empty()
                     : Optional.ofNullable(unvisitedNeighbours.get(randomNeighbourIndex.nextInt(unvisitedNeighbours.size())));
 
-            currentCell.markAsVisited();
             if (anyUnvisitedNeighbour.isPresent()) {
                 nextCell = anyUnvisitedNeighbour.get();
                 nextCell.setParent(currentCell);
@@ -54,17 +59,18 @@ public class RecursiveBacktrackerGenerator extends MazeGenerator {
                 // TODO Rethink cell representation
                 removeWalls(currentCell, nextCell);
 
-                cells.push(currentCell);
-                currentCell = nextCell;
+                nextCell.markAsVisited();
+                carvedCells.add(nextCell);
             } else {
-                currentCell = cells.pop();
+                LOGGER.info("No unvisited neighbours were found for current cell={}", currentCell + ", removing from list.");
+                carvedCells.remove(currentCell);
             }
-        } while (!cells.isEmpty());
+
+        } while (!carvedCells.isEmpty());
 
         // TODO Rethink cell representation
-         LOGGER.debug(generateMazeText(maze));
+        LOGGER.debug(generateMazeText(maze));
 
         return maze;
     }
-
 }

@@ -18,20 +18,16 @@ public class CellNode extends Node<MazeCell> {
 
     private static final Logger LOGGER = LogManager.getLogger(CellNode.class);
 
-    public CellNode(Node<MazeCell> parent, List<Node<MazeCell>> children, MazeCell entity) {
-        super(parent, children, entity);
+    public CellNode(MazeCell entity) {
+        super(entity);
     }
 
     public CellNode(Node<MazeCell> parent, MazeCell entity) {
         super(parent, entity);
     }
 
-    public CellNode(MazeCell entity) {
-        super(entity);
-    }
-
-    public void markAsVisited() {
-        this.entity.markAsVisited();
+    public CellNode(Node<MazeCell> parent, List<Node<MazeCell>> children, MazeCell entity) {
+        super(parent, children, entity);
     }
 
     public int getColumn() {
@@ -42,12 +38,16 @@ public class CellNode extends Node<MazeCell> {
         return this.entity.getRow();
     }
 
-    public boolean isNeighbourOf(MazeCell mazeCell) {
-        return this.entity.isNeighbourOf(mazeCell);
-    }
-
     public boolean isVisited() {
         return this.entity.isVisited();
+    }
+
+    public void markAsVisited() {
+        this.entity.markAsVisited();
+    }
+
+    public boolean isNeighbourOf(MazeCell mazeCell) {
+        return this.entity.isNeighbourOf(mazeCell);
     }
 
     public boolean isUpperNeighbourOf(CellNode nextCell) {

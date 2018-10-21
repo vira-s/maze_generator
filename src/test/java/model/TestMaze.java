@@ -1,6 +1,5 @@
 package model;
 
-import graph.generator.RecursiveBacktrackerGenerator;
 import model.cell.MazeCell;
 import model.graph.CellNode;
 import org.junit.Assert;
@@ -56,9 +55,19 @@ public class TestMaze {
     }
 
     @Test
-    public void test() {
-        RecursiveBacktrackerGenerator recursiveBacktrackerGenerator = new RecursiveBacktrackerGenerator();
-        recursiveBacktrackerGenerator.generate(10, 10);
+    public void testSelectStartPoint_random() {
+        CellNode result = maze.selectStartPoint(true);
+
+        Assert.assertNotNull("Result must not be null.", result);
+    }
+
+    @Test
+    public void testSelectStartPoint_notRandom() {
+        CellNode expected = new CellNode(new MazeCell(0, 0));
+        CellNode result = maze.selectStartPoint(false);
+
+        Assert.assertNotNull("Result must not be null.", result);
+        Assert.assertEquals(expected, result);
     }
 
 }

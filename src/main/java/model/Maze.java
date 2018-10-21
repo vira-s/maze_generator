@@ -164,6 +164,14 @@ public class Maze {
     }
 
     /**
+     * @return True if each {@link CellNode} is visited, false otherwise.
+     */
+    public boolean isComplete() {
+        return this.nodes.stream()
+                .allMatch(CellNode::isVisited);
+    }
+
+    /**
      * Prints the maze to the console in a vertical graph format.
      */
     public void printMazeGraph() {
@@ -211,5 +219,4 @@ public class Maze {
                 + ", nodes=" + nodes
                 + '}';
     }
-
 }

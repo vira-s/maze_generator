@@ -56,7 +56,8 @@ public class DepthFirstSearchRunner {
 
         LOGGER.info("The maze is connected.");
 
-        maze.printMazeGraph();
+        // TODO only use in debug mode
+        // maze.printMazeGraph();
         return true;
     }
 

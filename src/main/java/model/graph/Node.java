@@ -70,6 +70,7 @@ public class Node<T> {
     }
 
     public void makeRoot() {
+        this.parent = null;
         this.root = true;
     }
 
