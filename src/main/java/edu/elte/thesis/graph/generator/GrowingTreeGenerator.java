@@ -4,7 +4,6 @@ import edu.elte.thesis.model.Maze;
 import edu.elte.thesis.model.graph.CellNode;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.springframework.util.Assert;
 
 import java.security.SecureRandom;
 import java.util.ArrayList;
@@ -28,11 +27,8 @@ public class GrowingTreeGenerator extends MazeGenerator {
     }
 
     @Override
-    Maze generate(int columns, int rows) {
-        Assert.isTrue(columns > 0, "Columns must be positive.");
-        Assert.isTrue(rows > 0, "Rows must be positive.");
-
-        Maze maze = new Maze(columns, rows);
+    public Maze generate(int columns, int rows) {
+        Maze maze = super.generate(columns, rows);
 
         CellNode currentCell = maze.selectStartPoint(true);
         currentCell.makeRoot();
@@ -56,7 +52,6 @@ public class GrowingTreeGenerator extends MazeGenerator {
                 nextCell.setParent(currentCell);
                 currentCell.addChild(nextCell);
 
-                // TODO Rethink cell representation
                 removeWalls(currentCell, nextCell);
 
                 nextCell.markAsVisited();
@@ -68,7 +63,6 @@ public class GrowingTreeGenerator extends MazeGenerator {
 
         } while (!carvedCells.isEmpty());
 
-        // TODO Rethink cell representation
         LOGGER.debug(generateMazeText(maze));
 
         return maze;

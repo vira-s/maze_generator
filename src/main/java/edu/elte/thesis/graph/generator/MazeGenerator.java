@@ -3,6 +3,7 @@ package edu.elte.thesis.graph.generator;
 import edu.elte.thesis.model.Maze;
 import edu.elte.thesis.model.cell.WallPosition;
 import edu.elte.thesis.model.graph.CellNode;
+import org.springframework.util.Assert;
 
 /**
  * Interface to collect the common functionality of the generators.
@@ -11,24 +12,29 @@ import edu.elte.thesis.model.graph.CellNode;
  */
 public abstract class MazeGenerator extends MazeTextGenerator {
 
-    abstract Maze generate(int columns, int rows);
+    public Maze generate(int columns, int rows) {
+        Assert.isTrue(columns > 0, "Columns must be positive.");
+        Assert.isTrue(rows > 0, "Rows must be positive.");
 
-    protected void removeWalls(CellNode currentCell, CellNode nextCell) {
-        if (currentCell.isUpperNeighbourOf(nextCell)) {
-            currentCell.removeWall(WallPosition.SOUTH);
-            nextCell.removeWall(WallPosition.SOUTH.opposite());
+        return new Maze(columns, rows);
+    }
 
-        } else if (currentCell.isLowerNeighbourOf(nextCell)) {
-            currentCell.removeWall(WallPosition.NORTH);
-            nextCell.removeWall(WallPosition.NORTH.opposite());
+    protected void removeWalls(CellNode firstCell, CellNode secondCell) {
+        if (firstCell.isUpperNeighbourOf(secondCell)) {
+            firstCell.removeWall(WallPosition.SOUTH);
+            secondCell.removeWall(WallPosition.SOUTH.opposite());
 
-        } else if (currentCell.isLeftNeighbourOf(nextCell)) {
-            currentCell.removeWall(WallPosition.EAST);
-            nextCell.removeWall(WallPosition.EAST.opposite());
+        } else if (firstCell.isLowerNeighbourOf(secondCell)) {
+            firstCell.removeWall(WallPosition.NORTH);
+            secondCell.removeWall(WallPosition.NORTH.opposite());
 
-        } else if (currentCell.isRightNeighbourOf(nextCell)) {
-            currentCell.removeWall(WallPosition.WEST);
-            nextCell.removeWall(WallPosition.WEST.opposite());
+        } else if (firstCell.isLeftNeighbourOf(secondCell)) {
+            firstCell.removeWall(WallPosition.EAST);
+            secondCell.removeWall(WallPosition.EAST.opposite());
+
+        } else if (firstCell.isRightNeighbourOf(secondCell)) {
+            firstCell.removeWall(WallPosition.WEST);
+            secondCell.removeWall(WallPosition.WEST.opposite());
         }
     }
 

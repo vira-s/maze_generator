@@ -21,11 +21,8 @@ public class HuntAndKillGenerator extends MazeGenerator {
     private static final Logger LOGGER = LogManager.getLogger(HuntAndKillGenerator.class);
 
     @Override
-    Maze generate(int columns, int rows) {
-        Assert.isTrue(columns > 0, "Columns must be positive.");
-        Assert.isTrue(rows > 0, "Rows must be positive.");
-
-        Maze maze = new Maze(columns, rows);
+    public Maze generate(int columns, int rows) {
+        Maze maze = super.generate(columns, rows);
 
         CellNode currentCell = maze.selectStartPoint(true);
         currentCell.makeRoot();
@@ -59,7 +56,6 @@ public class HuntAndKillGenerator extends MazeGenerator {
             nextCell.setParent(currentCell);
             currentCell.addChild(nextCell);
 
-            // TODO Rethink cell representation
             removeWalls(currentCell, nextCell);
 
             currentCell = nextCell;
@@ -68,7 +64,6 @@ public class HuntAndKillGenerator extends MazeGenerator {
 
         }
 
-        // TODO Rethink cell representation
         LOGGER.debug(generateMazeText(maze));
         return maze;
 

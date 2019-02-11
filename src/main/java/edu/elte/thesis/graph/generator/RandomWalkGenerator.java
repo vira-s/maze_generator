@@ -1,7 +1,9 @@
 package edu.elte.thesis.graph.generator;
 
 import edu.elte.thesis.model.Maze;
+import edu.elte.thesis.model.cell.MazeCell;
 import edu.elte.thesis.model.graph.CellNode;
+import edu.elte.thesis.model.graph.Node;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -9,22 +11,15 @@ import java.security.SecureRandom;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
-import java.util.Stack;
 
 /**
- * Maze generator that implements the recursive backtracker algorithm.
+ * Maze generator that implements the random walk algorithm.
  *
  * @author Viktoria Sinkovics
  */
-public class RecursiveBacktrackerGenerator extends MazeGenerator {
+public class RandomWalkGenerator extends MazeGenerator {
 
-    private static final Logger LOGGER = LogManager.getLogger(RecursiveBacktrackerGenerator.class);
-
-    private Stack<CellNode> cells;
-
-    public RecursiveBacktrackerGenerator() {
-        cells = new Stack<>();
-    }
+    private static final Logger LOGGER = LogManager.getLogger(RandomWalkGenerator.class);
 
     @Override
     public Maze generate(int columns, int rows) {
@@ -32,33 +27,42 @@ public class RecursiveBacktrackerGenerator extends MazeGenerator {
 
         CellNode currentCell = maze.selectStartPoint(true);
         currentCell.makeRoot();
+        currentCell.markAsVisited();
 
         CellNode nextCell;
         Random randomNeighbourIndex = new SecureRandom();
+        boolean isMazeReady;
+
         do {
             List<CellNode> unvisitedNeighbours = maze.findUnvisitedNeighboursOf(currentCell.getEntity());
+
             Optional<CellNode> anyUnvisitedNeighbour = unvisitedNeighbours.isEmpty()
                     ? Optional.empty()
                     : Optional.ofNullable(unvisitedNeighbours.get(randomNeighbourIndex.nextInt(unvisitedNeighbours.size())));
 
-            currentCell.markAsVisited();
             if (anyUnvisitedNeighbour.isPresent()) {
                 nextCell = anyUnvisitedNeighbour.get();
+
                 nextCell.setParent(currentCell);
                 currentCell.addChild(nextCell);
 
                 removeWalls(currentCell, nextCell);
 
-                cells.push(currentCell);
                 currentCell = nextCell;
+                currentCell.markAsVisited();
             } else {
-                currentCell = cells.pop();
+                Optional<Node<MazeCell>> parent = currentCell.getParent();
+                if (parent.isPresent()) {
+                    CellNode parentCell = (CellNode) parent.get();
+                    currentCell = maze.getCellNodeByCoordinates(parentCell.getColumn(), parentCell.getRow());
+                }
             }
-        } while (!cells.isEmpty());
 
-         LOGGER.debug(generateMazeText(maze));
+            isMazeReady = currentCell.isRoot() && unvisitedNeighbours.isEmpty();
+        } while (!isMazeReady);
+
+        LOGGER.debug(generateMazeText(maze));
 
         return maze;
     }
-
 }

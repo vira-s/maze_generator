@@ -82,7 +82,7 @@ public class Node<T> {
         } else {
             if (Objects.isNull(this.parent) && Objects.nonNull(parent)) {
                 this.parent = parent;
-            } else {
+            } else if (!Objects.equals(this.parent, parent)) {
                 throw new IllegalStateException("Trying to remove parent on a non-root cell or to change the parent."
                         + " [Cell: " + this + "];[Parent: " + parent + "]");
             }
@@ -93,7 +93,11 @@ public class Node<T> {
         Assert.notNull(child, "child should not be null.");
         Assert.isTrue(this.children.size() < 4, "Node can't have more than 4 children.");
 
-        this.children.add(child);
+        if (this.children.contains(child)) {
+            LOGGER.info("Node is already a child. {}", child);
+        } else {
+            this.children.add(child);
+        }
 
         return child;
     }
