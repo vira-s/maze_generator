@@ -32,11 +32,12 @@ public class SidewinderGenerator extends MazeGenerator {
 
         CellNode currentCell;
         CellNode nextCell;
-        Random shouldCarveEast = new SecureRandom();
+        Random shouldCarveToEast = new SecureRandom();
         Random indexOfCellToCarveNorth = new SecureRandom();
 
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
+
                 currentCell = maze.getCellNodeByCoordinates(column, row);
                 currentCell.markAsVisited();
                 runSet.add(currentCell);
@@ -45,11 +46,12 @@ public class SidewinderGenerator extends MazeGenerator {
                     currentCell.makeRoot();
                 }
 
-                boolean shouldCarve = shouldCarveEast.nextBoolean();
-                if (row > 0 && (column == (columns - 1) || !shouldCarve)) {
-                    LOGGER.info("Carving passage to {} from cell=({},{})",
-                            WallPosition.NORTH, currentCell.getColumn(), currentCell.getRow());
+                boolean shouldCarveEast = shouldCarveToEast.nextBoolean();
+
+                if (row > 0 && (column == (columns - 1) || !shouldCarveEast)) {
                     currentCell = runSet.get(indexOfCellToCarveNorth.nextInt(runSet.size()));
+                    LOGGER.debug("Carving passage to {} from cell=({},{})",
+                            WallPosition.NORTH, currentCell.getColumn(), currentCell.getRow());
 
                     CellNode parentOfCurrentCell = maze.getCellNodeByCoordinates(currentCell.getColumn(), currentCell.getRow() - 1);
                     currentCell.setParent(parentOfCurrentCell);
@@ -61,7 +63,8 @@ public class SidewinderGenerator extends MazeGenerator {
                     runSet = new ArrayList<>();
                 } else if ((row == 0 && column < (columns - 1))
                         || (row != 0 && column < (columns - 1))){
-                    LOGGER.info("Carving passage to {} from cell=({},{})",
+
+                    LOGGER.debug("Carving passage to {} from cell=({},{})",
                             WallPosition.EAST, currentCell.getColumn(), currentCell.getRow());
 
                     nextCell = maze.getCellNodeByCoordinates(column + 1, row);
@@ -71,7 +74,6 @@ public class SidewinderGenerator extends MazeGenerator {
                     setUpSubGraph(maze.getCellNodeByCoordinates(0, 0), runSet, maze);
                     runSet = new ArrayList<>();
                 }
-
             }
         }
 
@@ -84,40 +86,35 @@ public class SidewinderGenerator extends MazeGenerator {
         if (runSet.size() == 1) {
             return;
         }
+
+        handleNeighbours(maze, startCell, true);
+        handleNeighbours(maze, startCell, false);
+    }
+
+    private void handleNeighbours(Maze maze, CellNode startCell, boolean right) {
         CellNode currentCell = startCell;
+        int column = right
+                ? currentCell.getColumn() + 1
+                : currentCell.getColumn() - 1;
+        boolean isNeighbourPresent = runSet.stream()
+                .anyMatch(cellNode -> column == cellNode.getColumn());
+
+        int col = column;
         CellNode nextCell;
-        
-        int rightColumn = startCell.getColumn() + 1;
-        boolean isRightNeighbourPresent = runSet.stream()
-                .anyMatch(cellNode -> rightColumn == cellNode.getColumn());
-
-        while (isRightNeighbourPresent) {
-            nextCell = maze.getCellNodeByCoordinates(currentCell.getColumn() + 1, currentCell.getRow());
+        while (isNeighbourPresent) {
+            nextCell = maze.getCellNodeByCoordinates(col, currentCell.getRow());
 
             nextCell.setParent(currentCell);
             currentCell.addChild(nextCell);
 
             currentCell = nextCell;
-            int nextColumn = currentCell.getColumn() + 1;
-            isRightNeighbourPresent = runSet.stream()
+            int nextColumn = right
+                    ? currentCell.getColumn() + 1
+                    : currentCell.getColumn() - 1;
+            isNeighbourPresent = runSet.stream()
                     .anyMatch(cellNode -> nextColumn == cellNode.getColumn());
-        }
-
-        currentCell = startCell;
-        int leftColumn = startCell.getColumn() - 1;
-        boolean isLeftNeighbourPresent = runSet.stream()
-                .anyMatch(cellNode -> leftColumn == cellNode.getColumn());
-
-        while (isLeftNeighbourPresent) {
-            nextCell = maze.getCellNodeByCoordinates(currentCell.getColumn() - 1, currentCell.getRow());
-
-            nextCell.setParent(currentCell);
-            currentCell.addChild(nextCell);
-
-            currentCell = nextCell;
-            int nextColumn = currentCell.getColumn() - 1;
-            isLeftNeighbourPresent = runSet.stream()
-                    .anyMatch(cellNode -> nextColumn == cellNode.getColumn());
+            col = nextColumn;
         }
     }
+
 }

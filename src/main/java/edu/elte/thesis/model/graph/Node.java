@@ -83,7 +83,7 @@ public class Node<T> {
             if (Objects.isNull(this.parent) && Objects.nonNull(parent)) {
                 this.parent = parent;
             } else if (!Objects.equals(this.parent, parent)) {
-                throw new IllegalStateException("Trying to remove parent on a non-root cell or to change the parent."
+                throw new UnsupportedOperationException("Trying to remove parent on a non-root cell or to change the parent."
                         + " [Cell: " + this + "];[Parent: " + parent + "]");
             }
         }
