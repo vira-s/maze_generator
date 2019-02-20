@@ -63,6 +63,11 @@ public class Maze {
         return columns;
     }
 
+    public SimplifiedMaze getSimplifiedMaze() {
+        SimplifiedMaze simplifiedMaze = new SimplifiedMaze();
+        return simplifiedMaze.createSimplifiedMaze(this);
+    }
+
     public List<CellNode> getNodes() {
         return nodes;
     }
@@ -123,6 +128,21 @@ public class Maze {
     }
 
     /**
+     * Retrieves the starting point/root of the maze.
+     *
+     * @return The root
+     */
+    public CellNode findRoot() {
+        List<CellNode> rootCells = this.nodes.stream()
+                .filter(Node::isRoot)
+                .collect(Collectors.toList());
+
+        Assert.isTrue(rootCells.size() == 1, "Exactly one root cell is required/allowed. " + rootCells);
+
+        return rootCells.get(0);
+    }
+
+    /**
      * Selects a start point for the {@link edu.elte.thesis.graph.generator.MazeGenerator}.
      *
      * @param random If the start point should be selected at random, or use the default (0,0) point
@@ -144,21 +164,6 @@ public class Maze {
         }
 
         return startCellNode;
-    }
-
-    /**
-     * Retrieves the starting point/root of the maze.
-     *
-     * @return The root
-     */
-    public CellNode findRoot() {
-        List<CellNode> rootCells = this.nodes.stream()
-                .filter(Node::isRoot)
-                .collect(Collectors.toList());
-
-        Assert.isTrue(rootCells.size() == 1, "Exactly one root cell is required/allowed. " + rootCells);
-
-        return rootCells.get(0);
     }
 
     /**

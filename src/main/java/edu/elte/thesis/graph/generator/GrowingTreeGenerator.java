@@ -63,8 +63,6 @@ public class GrowingTreeGenerator extends MazeGenerator {
 
         } while (!carvedCells.isEmpty());
 
-        LOGGER.debug(generateMazeText(maze));
-
         return maze;
     }
 }

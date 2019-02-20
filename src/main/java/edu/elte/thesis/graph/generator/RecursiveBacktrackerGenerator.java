@@ -56,8 +56,6 @@ public class RecursiveBacktrackerGenerator extends MazeGenerator {
             }
         } while (!cells.isEmpty());
 
-         LOGGER.debug(generateMazeText(maze));
-
         return maze;
     }
 

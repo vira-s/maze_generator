@@ -61,8 +61,6 @@ public class RandomWalkGenerator extends MazeGenerator {
             isMazeReady = currentCell.isRoot() && unvisitedNeighbours.isEmpty();
         } while (!isMazeReady);
 
-        LOGGER.debug(generateMazeText(maze));
-
         return maze;
     }
 }

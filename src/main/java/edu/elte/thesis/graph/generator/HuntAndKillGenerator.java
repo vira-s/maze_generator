@@ -64,7 +64,6 @@ public class HuntAndKillGenerator extends MazeGenerator {
 
         }
 
-        LOGGER.debug(generateMazeText(maze));
         return maze;
 
     }

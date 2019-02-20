@@ -77,8 +77,6 @@ public class SidewinderGenerator extends MazeGenerator {
             }
         }
 
-        LOGGER.debug(generateMazeText(maze));
-
         return maze;
     }
 

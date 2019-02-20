@@ -17,8 +17,11 @@
         <log4j.version>2.11.1</log4j.version>
         <junit.version>4.10</junit.version>
         <mockito.version>2.10.0</mockito.version>
-        <apache.version>3.4</apache.version>
+        <apache.lang3.version>3.4</apache.lang3.version>
+        <apache.io.version>2.6</apache.io.version>
         <jackson.version>2.9.8</jackson.version>
+        <eclipselink.version>2.5.0</eclipselink.version>
+        <jaxb.version>2.2.11</jaxb.version>
     </properties>
 
     <build>
@@ -81,7 +84,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${apache.version}</version>
+            <version>${apache.lang3.version}</version>
         </dependency>
 
         <dependency>
@@ -97,9 +100,27 @@
         </dependency>
 
         <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${apache.io.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.persistence</groupId>
+            <artifactId>eclipselink</artifactId>
+            <version>${eclipselink.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>${jaxb.version}</version>
         </dependency>
 
         <!-- Test dependencies-->

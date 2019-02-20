@@ -10,7 +10,7 @@ import org.springframework.util.Assert;
  *
  * @author Viktoria Sinkovics
  */
-public abstract class MazeGenerator extends MazeTextGenerator {
+public abstract class MazeGenerator {
 
     public Maze generate(int columns, int rows) {
         Assert.isTrue(columns > 0, "Columns must be positive.");
