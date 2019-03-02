@@ -27,6 +27,8 @@ public class SimplifiedMaze {
     }
 
     public SimplifiedMaze(List<String> simplifiedMaze) {
+        Assert.notNull(simplifiedMaze, "simplifiedMaze should not be null.");
+
         this.simplifiedMaze = simplifiedMaze;
     }
 

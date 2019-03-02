@@ -2,6 +2,7 @@ package edu.elte.thesis;
 
 import edu.elte.thesis.graph.generator.GrowingTreeGenerator;
 import edu.elte.thesis.graph.generator.HuntAndKillGenerator;
+import edu.elte.thesis.graph.generator.MazeGenerator;
 import edu.elte.thesis.graph.generator.RandomWalkGenerator;
 import edu.elte.thesis.graph.generator.RecursiveBacktrackerGenerator;
 import edu.elte.thesis.graph.generator.SidewinderGenerator;
@@ -10,45 +11,39 @@ import edu.elte.thesis.model.Maze;
 import edu.elte.thesis.model.SimplifiedMaze;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
- * RecursiveBacktracker 3x3     1.000.000   6456.34237576 seconds
- * GrowingTree          3x3     1.000.000   7089.191206233 seconds
- *
- * Sidewinder           3x3     100.000     664.806917414 seconds
- * HuntAndKill          3x3     100.000     842.04610216 seconds
- * RandomWalk           3x3     100.000     1030.228515462 seconds
- *
- *
- * HuntAndKill          4x4     200.000     1427.548865369 seconds
- *
- *
  * @author Viktoria Sinkovics
  */
 public class DemoApplication {
-    private static final Logger LOGGER = LogManager.getLogger(DemoApplication.class);
 
-    private static final String fileNamePrefix = new File("").getAbsolutePath() + "\\src\\main\\resources\\edu\\elte\\thesis\\generated\\huntAndKill_";
-    private static final String runTimesFileName = new File("").getAbsolutePath() + "\\src\\main\\resources\\edu\\elte\\thesis\\generated\\runTimes.txt";
+    private static final int SECONDS_PER_MINUTE = 60;
+    private static final int MINUTES_PER_HOUR = 60;
+    private static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 
-    private static final Object ALGORITHM_NAME =
-            "huntAndKill";
-            // "growingTree";
-            // "randomWalk";
-            // "sidewinder";
-            // "recursiveBacktracker";
+    private static final String FILE_PATH = new File("").getAbsolutePath() + "\\src\\main\\resources\\edu\\elte\\thesis\\generated\\";
+    private static final String RUN_TIMES_FILE_NAME = FILE_PATH + "runTimes.txt";
+
+    private static final String HUNT_AND_KILL = "huntAndKill";
+    private static final String GROWING_TREE = "growingTree";
+    private static final String RANDOM_WALK = "randomWalk";
+    private static final String SIDEWINDER = "sidewinder";
+    private static final String RECURSIVE_BACKTRACKER = "recursiveBacktracker";
 
     private static HuntAndKillGenerator huntAndKillGenerator;
     private static GrowingTreeGenerator growingTreeGenerator;
     private static RandomWalkGenerator randomWalkGenerator;
     private static SidewinderGenerator sidewinderGenerator;
     private static RecursiveBacktrackerGenerator recursiveBacktrackerGenerator;
+
+    private static StopWatch stopWatch;
+    private static JsonObjectMarshaller jsonObjectMarshaller;
 
     public static void main(String[] args) throws IOException {
         huntAndKillGenerator = new HuntAndKillGenerator();
@@ -57,45 +52,70 @@ public class DemoApplication {
         sidewinderGenerator = new SidewinderGenerator();
         recursiveBacktrackerGenerator = new RecursiveBacktrackerGenerator();
 
-        StopWatch stopWatch = new StopWatch();
-        int size = 3;
-        int numberOfRuns = 1000000;
-        int repeatCount = 5;
+        jsonObjectMarshaller = new JsonObjectMarshaller(SimplifiedMaze.class);
+        stopWatch = new StopWatch();
 
-        run(stopWatch, size, numberOfRuns, repeatCount);
+        int size = 5;
+        int numberOfRuns = 50000;
+        int repeatCount = 10;
+
+        run(size, numberOfRuns, repeatCount, HUNT_AND_KILL, huntAndKillGenerator);
+
+        run(size, numberOfRuns, repeatCount, GROWING_TREE, growingTreeGenerator);
+
+        run(size, numberOfRuns, repeatCount, RANDOM_WALK, randomWalkGenerator);
+
+        run(size, numberOfRuns, repeatCount, SIDEWINDER, sidewinderGenerator);
+
+        run(size, numberOfRuns, repeatCount, RECURSIVE_BACKTRACKER, recursiveBacktrackerGenerator);
+
     }
 
-    private static void run(StopWatch stopWatch, int size, int numberOfRuns, int repeatCount) throws IOException {
-        File file = new File(runTimesFileName);
-        double timeInSec;
+    private static void run(int size,
+                            int numberOfRuns,
+                            int repeatCount,
+                            String algorithmName,
+                            MazeGenerator mazeGenerator) throws IOException {
+        File file = new File(RUN_TIMES_FILE_NAME);
+        String time;
 
         for (int counter = 0; counter < repeatCount; ++counter) {
+            File mazeFile = new File(FILE_PATH + algorithmName + "_" + counter + ".txt");
+
             stopWatch.start();
-            generate(size, numberOfRuns, counter);
+            runGenerate(numberOfRuns, size, mazeGenerator, mazeFile);
             stopWatch.stop();
 
-            timeInSec = ((double) stopWatch.getNanoTime()) / 1E9;
-            String data = "Run finished in " + timeInSec + " seconds. Algorithm=" + ALGORITHM_NAME + ", size=" + size + ", numberOfRuns=" + numberOfRuns + ".";
+            time = convertNanosecondsToReadableFormat(stopWatch.getNanoTime());
+            String data = "[" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace("T", " ") + "]: "
+                    + time + " - "
+                    + algorithmName + " - "
+                    + size + "x" + size + " - "
+                    + numberOfRuns + " pcs.";
             FileUtils.writeStringToFile(file, data + "\n", StandardCharsets.UTF_8, true);
 
             stopWatch.reset();
         }
     }
 
-    private static void generate(int size, int numberOfRuns, int currentRun) throws IOException {
-        File file = new File(fileNamePrefix + currentRun + ".txt");
-        JsonObjectMarshaller jsonObjectMarshaller = new JsonObjectMarshaller(SimplifiedMaze.class);
-
+    private static void runGenerate(int numberOfRuns, int size, MazeGenerator mazeGenerator, File mazeFile) throws IOException {
         for (int counter = 0; counter < numberOfRuns; ++counter) {
-            Maze maze = huntAndKillGenerator.generate(size, size);
-                    // growingTreeGenerator.generate(size, size);
-                    // randomWalkGenerator.generate(size, size);
-                    // sidewinderGenerator.generate(size, size);
-                    // recursiveBacktrackerGenerator.generate(size, size);
+            Maze maze = mazeGenerator.generate(size, size);
 
             String data = jsonObjectMarshaller.marshal(maze.getSimplifiedMaze());
-            FileUtils.writeStringToFile(file, data + "\n", StandardCharsets.UTF_8, true);
+            FileUtils.writeStringToFile(mazeFile, data + "\n", StandardCharsets.UTF_8, true);
         }
     }
 
+    private static String convertNanosecondsToReadableFormat(long nanoseconds) {
+        double fullTimeInSeconds = ((double) nanoseconds) / 1E9;
+
+        long hours = (long) (fullTimeInSeconds / SECONDS_PER_HOUR);
+        int minutes = (int) ((fullTimeInSeconds % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE);
+        int seconds = (int) (fullTimeInSeconds % SECONDS_PER_MINUTE);
+
+
+        return String.format("%dh %dm %ds", hours , minutes, seconds);
+
+    }
 }

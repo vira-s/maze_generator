@@ -50,8 +50,7 @@ public class SidewinderGenerator extends MazeGenerator {
 
                 if (row > 0 && (column == (columns - 1) || !shouldCarveEast)) {
                     currentCell = runSet.get(indexOfCellToCarveNorth.nextInt(runSet.size()));
-                    LOGGER.debug("Carving passage to {} from cell=({},{})",
-                            WallPosition.NORTH, currentCell.getColumn(), currentCell.getRow());
+                    LOGGER.debug("Carving passage to {}", WallPosition.NORTH);
 
                     CellNode parentOfCurrentCell = maze.getCellNodeByCoordinates(currentCell.getColumn(), currentCell.getRow() - 1);
                     currentCell.setParent(parentOfCurrentCell);
@@ -64,8 +63,7 @@ public class SidewinderGenerator extends MazeGenerator {
                 } else if ((row == 0 && column < (columns - 1))
                         || (row != 0 && column < (columns - 1))){
 
-                    LOGGER.debug("Carving passage to {} from cell=({},{})",
-                            WallPosition.EAST, currentCell.getColumn(), currentCell.getRow());
+                    LOGGER.debug("Carving passage to {}", WallPosition.EAST);
 
                     nextCell = maze.getCellNodeByCoordinates(column + 1, row);
 
