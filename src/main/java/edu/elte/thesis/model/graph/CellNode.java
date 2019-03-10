@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * Represents a node for a {@link MazeCell}.
@@ -97,7 +98,13 @@ public class CellNode extends Node<MazeCell> {
                 + (Objects.isNull(parent)
                     ? null
                     : parent.getEntity().getColumn() + ", " + parent.getEntity().getRow()) + ")"
-                + ", entity=" + entity
+                + ", childrenCoordinates=["
+                + (Objects.isNull(children) || children.isEmpty()
+                    ? null
+                    : children.stream()
+                            .map(child -> "(" + child.getEntity().getColumn() + ", " + child.getEntity().getRow() + ")")
+                            .collect(Collectors.joining(", ")))
+                + "], entity=" + entity
                 + '}';
     }
 }

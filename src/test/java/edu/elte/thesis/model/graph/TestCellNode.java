@@ -1,4 +1,4 @@
-package edu.elte.thesis.model;
+package edu.elte.thesis.model.graph;
 
 import edu.elte.thesis.model.cell.MazeCell;
 import edu.elte.thesis.model.graph.CellNode;

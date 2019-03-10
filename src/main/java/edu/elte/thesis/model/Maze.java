@@ -63,11 +63,6 @@ public class Maze {
         return columns;
     }
 
-    public SimplifiedMaze getSimplifiedMaze() {
-        SimplifiedMaze simplifiedMaze = new SimplifiedMaze();
-        return simplifiedMaze.createSimplifiedMaze(this);
-    }
-
     public List<CellNode> getNodes() {
         return nodes;
     }

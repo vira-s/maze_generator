@@ -8,7 +8,7 @@ import edu.elte.thesis.graph.generator.RecursiveBacktrackerGenerator;
 import edu.elte.thesis.graph.generator.SidewinderGenerator;
 import edu.elte.thesis.messaging.json.JsonObjectMarshaller;
 import edu.elte.thesis.model.Maze;
-import edu.elte.thesis.model.SimplifiedMaze;
+import edu.elte.thesis.model.BinarizedMaze;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -44,6 +44,7 @@ public class DemoApplication {
 
     private static StopWatch stopWatch;
     private static JsonObjectMarshaller jsonObjectMarshaller;
+    private static BinarizedMaze binarizedMaze;
 
     public static void main(String[] args) throws IOException {
         huntAndKillGenerator = new HuntAndKillGenerator();
@@ -52,10 +53,11 @@ public class DemoApplication {
         sidewinderGenerator = new SidewinderGenerator();
         recursiveBacktrackerGenerator = new RecursiveBacktrackerGenerator();
 
-        jsonObjectMarshaller = new JsonObjectMarshaller(SimplifiedMaze.class);
         stopWatch = new StopWatch();
+        jsonObjectMarshaller = new JsonObjectMarshaller(BinarizedMaze.class);
+        binarizedMaze = new BinarizedMaze();
 
-        int size = 5;
+        int size = 10;
         int numberOfRuns = 50000;
         int repeatCount = 10;
 
@@ -80,7 +82,7 @@ public class DemoApplication {
         String time;
 
         for (int counter = 0; counter < repeatCount; ++counter) {
-            File mazeFile = new File(FILE_PATH + algorithmName + "_" + counter + ".txt");
+            File mazeFile = new File(FILE_PATH + algorithmName + "_" + size + "x" + size + "_" + counter + ".txt");
 
             stopWatch.start();
             runGenerate(numberOfRuns, size, mazeGenerator, mazeFile);
@@ -102,7 +104,7 @@ public class DemoApplication {
         for (int counter = 0; counter < numberOfRuns; ++counter) {
             Maze maze = mazeGenerator.generate(size, size);
 
-            String data = jsonObjectMarshaller.marshal(maze.getSimplifiedMaze());
+            String data = jsonObjectMarshaller.marshal(binarizedMaze.binarizeMaze(maze));
             FileUtils.writeStringToFile(mazeFile, data + "\n", StandardCharsets.UTF_8, true);
         }
     }
