@@ -1,12 +1,12 @@
 package edu.elte.thesis.graph.utils;
 
 import edu.elte.thesis.model.Maze;
+import edu.elte.thesis.utils.DummyFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
-import edu.elte.thesis.utils.DummyFactory;
 
 /**
  * @author Viktoria Sinkovics
@@ -20,7 +20,9 @@ public class TestDepthFirstSearchRunner {
 
     private Maze acyclicMaze;
 
-    private Maze disconnectedMaze;
+    private Maze disconnectedMaze_multipleRoots;
+
+    private Maze disconnectedMaze_singleRoot;
 
     @Before
     public void setUp() throws Exception {
@@ -28,7 +30,8 @@ public class TestDepthFirstSearchRunner {
 
         cyclicMaze = new Maze(2, 2, DummyFactory.getCyclicNodes());
         acyclicMaze = new Maze(2, 2, DummyFactory.getAcyclicNodes());
-        disconnectedMaze = new Maze(2, 2, DummyFactory.getDisconnectedNodes());
+        disconnectedMaze_multipleRoots = new Maze(2, 2, DummyFactory.getDisconnectedNodes(true));
+        disconnectedMaze_singleRoot = new Maze(2, 2, DummyFactory.getDisconnectedNodes(false));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -44,10 +47,17 @@ public class TestDepthFirstSearchRunner {
     }
 
     @Test
-    public void testRun_acyclic_disconnected() {
-        boolean result = depthFirstSearchRunnerUT.run(disconnectedMaze);
+    public void testRun_acyclic_disconnected_singleRoot() {
+        boolean result = depthFirstSearchRunnerUT.run(disconnectedMaze_singleRoot);
 
-        Assert.assertFalse("The maze should be disconnected " + disconnectedMaze, result);
+        Assert.assertFalse("The maze should be disconnected " + disconnectedMaze_singleRoot, result);
+    }
+
+    @Test
+    public void testRun_acyclic_disconnected_multipleRoots() {
+        boolean result = depthFirstSearchRunnerUT.run(disconnectedMaze_multipleRoots);
+
+        Assert.assertFalse("The maze should be disconnected " + disconnectedMaze_singleRoot, result);
     }
 
     @Test

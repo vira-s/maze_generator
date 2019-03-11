@@ -1,5 +1,6 @@
-package edu.elte.thesis.model;
+package edu.elte.thesis.graph.utils;
 
+import edu.elte.thesis.model.Maze;
 import edu.elte.thesis.model.cell.WallPosition;
 import edu.elte.thesis.model.graph.CellNode;
 import org.apache.commons.lang3.StringUtils;
@@ -13,6 +14,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -42,7 +44,7 @@ public class BinarizedMaze {
     }
 
     /**
-     * Creates a binarized representation of a {@link Maze).
+     * Creates a binarized representation of a {@link Maze ).
      *
      * Walls and openings are defined as '1' and '0' respectively.
      * The maze's first row is a fixed wall, also each row has a wall as a prefix.
@@ -124,7 +126,8 @@ public class BinarizedMaze {
         int rows = (binarizedMaze.get(0).length() - 1) / 2;
 
         Maze maze = createMazeTemplate(columns, rows);
-        setUpGraph(maze);
+        setUpGraph(maze, 0, 0);
+
         return maze;
     }
 
@@ -248,21 +251,24 @@ public class BinarizedMaze {
      * Creates the connections between the maze's cells based on the {@link this#binarizedMaze}.
      *
      * @param maze The maze
+     * @param startColumn The start column
+     * @param startRow The start row
      */
-    private void setUpGraph(Maze maze) {
+    private void setUpGraph(Maze maze, int startColumn, int startRow) {
         List<CellNode> unfinishedCells = new ArrayList<>();
-        CellNode currentCell = maze.getCellNodeByCoordinates(0, 0);
+        CellNode currentCell = maze.getCellNodeByCoordinates(startColumn, startRow);
         currentCell.makeRoot();
         unfinishedCells.add(currentCell);
 
         int columns = maze.getColumns();
         int rows = maze.getRows();
 
-        int column;
-        int row;
+        int column, row;
 
         while (!unfinishedCells.isEmpty()) {
             currentCell = unfinishedCells.remove(0);
+            currentCell.markAsVisited();
+
             column = currentCell.getColumn();
             row = currentCell.getRow();
 
@@ -281,6 +287,18 @@ public class BinarizedMaze {
             if (!currentCell.getWallByPosition(WallPosition.NORTH).isVisible() && row - 1 >= 0) {
                 handleNextCell(currentCell, maze.getCellNodeByCoordinates(column, row - 1), unfinishedCells);
             }
+        }
+
+        List<CellNode> unvisitedCells = maze.getNodes()
+                .stream()
+                .filter(node -> !node.isVisited())
+                .sorted(Comparator.comparing(CellNode::getColumn)
+                        .thenComparing(CellNode::getRow))
+                .collect(Collectors.toList());
+
+        if (!unvisitedCells.isEmpty()) {
+            CellNode nextStartCell = unvisitedCells.get(0);
+            setUpGraph(maze, nextStartCell.getColumn(), nextStartCell.getRow());
         }
     }
 

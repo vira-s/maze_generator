@@ -1,6 +1,7 @@
 package edu.elte.thesis.model;
 
 
+import edu.elte.thesis.exception.MultipleRootsException;
 import edu.elte.thesis.model.cell.MazeCell;
 import edu.elte.thesis.model.graph.CellNode;
 import edu.elte.thesis.model.graph.Node;
@@ -127,12 +128,14 @@ public class Maze {
      *
      * @return The root
      */
-    public CellNode findRoot() {
+    public CellNode findRoot() throws MultipleRootsException {
         List<CellNode> rootCells = this.nodes.stream()
                 .filter(Node::isRoot)
                 .collect(Collectors.toList());
 
-        Assert.isTrue(rootCells.size() == 1, "Exactly one root cell is required/allowed. " + rootCells);
+        if (rootCells.size() != 1) {
+            throw new MultipleRootsException("Exactly one root cell is required/allowed. " + rootCells);
+        }
 
         return rootCells.get(0);
     }
@@ -172,7 +175,7 @@ public class Maze {
     /**
      * Prints the maze to the console in a vertical graph format.
      */
-    public void printMazeGraph() {
+    public void printMazeGraph() throws MultipleRootsException {
         this.findRoot().print("", true);
     }
 

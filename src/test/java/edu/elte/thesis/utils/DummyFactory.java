@@ -108,11 +108,11 @@ public class DummyFactory {
         return Arrays.asList(first, second, third, fourth);
     }
 
-    public static List<CellNode> getDisconnectedNodes() {
+    public static List<CellNode> getDisconnectedNodes(boolean multipleRoots) {
         CellNode first = new CellNode(new MazeCell(0, 0));
         CellNode second = new CellNode(new MazeCell(1, 0));
-        CellNode third = new CellNode(new MazeCell(1, 1));
-        CellNode fourth = new CellNode(new MazeCell(0, 1));
+        CellNode third = new CellNode(new MazeCell(0, 1));
+        CellNode fourth = new CellNode(new MazeCell(1, 1));
 
         first.makeRoot();
         first.addChild(second);
@@ -121,11 +121,14 @@ public class DummyFactory {
         second.setParent(first);
         second.removeWall(WallPosition.WEST);
 
+        if (multipleRoots) {
+            third.makeRoot();
+        }
         third.addChild(fourth);
-        third.removeWall(WallPosition.WEST);
+        third.removeWall(WallPosition.EAST);
 
         fourth.setParent(third);
-        fourth.removeWall(WallPosition.EAST);
+        fourth.removeWall(WallPosition.WEST);
 
         return Arrays.asList(first, second, third, fourth);
     }

@@ -1,5 +1,6 @@
-package edu.elte.thesis.model;
+package edu.elte.thesis.graph.utils;
 
+import edu.elte.thesis.model.Maze;
 import edu.elte.thesis.model.cell.WallPosition;
 import edu.elte.thesis.model.graph.CellNode;
 import edu.elte.thesis.utils.DummyFactory;
@@ -7,7 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
@@ -22,7 +22,9 @@ import java.util.stream.Collectors;
 public class TestBinarizedMaze {
     private static final Logger LOGGER = LogManager.getLogger(TestBinarizedMaze.class);
 
-    private BinarizedMaze binarizedMaze;
+    private BinarizedMaze binarizedMazeUT;
+
+    private DepthFirstSearchRunner depthFirstSearchRunnerUT;
 
     private Maze acyclicMaze;
     private Maze cyclicMaze;
@@ -30,29 +32,39 @@ public class TestBinarizedMaze {
 
     @Before
     public void setUp() {
-        binarizedMaze = new BinarizedMaze();
+        binarizedMazeUT = new BinarizedMaze();
+        depthFirstSearchRunnerUT = new DepthFirstSearchRunner();
+
         acyclicMaze = new Maze(2, 2, DummyFactory.getAcyclicNodes());
         cyclicMaze = new Maze(2, 2, DummyFactory.getCyclicNodes());
-        disconnectedMaze = new Maze(2, 2, DummyFactory.getDisconnectedNodes());
+        disconnectedMaze = new Maze(2, 2, DummyFactory.getDisconnectedNodes(true));
     }
 
     @Test
     public void testCreateGraphFromBinarizedMaze_acyclicMaze() {
-        Maze result = binarizedMaze.createGraphFromBinarizedMaze(DummyFactory.ACYCLIC_MAZE);
-        assertEqualsMazesParentInsensitive(acyclicMaze, result);
+        Maze resultMaze = binarizedMazeUT.createGraphFromBinarizedMaze(DummyFactory.ACYCLIC_MAZE);
+        assertEqualsMazesParentInsensitive(acyclicMaze, resultMaze);
+
+        boolean result = depthFirstSearchRunnerUT.run(resultMaze);
+        Assert.assertTrue("The maze should be acyclic " + resultMaze, result);
     }
 
     @Test
     public void testCreateGraphFromBinarizedMaze_cyclicMaze() {
-        Maze result = binarizedMaze.createGraphFromBinarizedMaze(DummyFactory.CYCLIC_MAZE);
-        assertEqualsMazesParentInsensitive(cyclicMaze, result);
+        Maze resultMaze = binarizedMazeUT.createGraphFromBinarizedMaze(DummyFactory.CYCLIC_MAZE);
+        assertEqualsMazesParentInsensitive(cyclicMaze, resultMaze);
+
+        boolean result = depthFirstSearchRunnerUT.run(resultMaze);
+        Assert.assertFalse("The maze should be cyclic " + resultMaze, result);
     }
 
-    @Ignore
     @Test
     public void testCreateGraphFromBinarizedMaze_disconnectedMaze() {
-        Maze result = binarizedMaze.createGraphFromBinarizedMaze(DummyFactory.DISCONNECTED_MAZE);
-        assertEqualsMazesParentInsensitive(disconnectedMaze, result);
+        Maze resultMaze = binarizedMazeUT.createGraphFromBinarizedMaze(DummyFactory.DISCONNECTED_MAZE);
+        assertEqualsMazesParentInsensitive(disconnectedMaze, resultMaze);
+
+        boolean result = depthFirstSearchRunnerUT.run(resultMaze);
+        Assert.assertFalse("The maze should be disconnected " + resultMaze, result);
     }
 
     private void assertEqualsMazesParentInsensitive(Maze expected, Maze result) {

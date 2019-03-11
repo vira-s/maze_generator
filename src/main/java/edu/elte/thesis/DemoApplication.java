@@ -8,7 +8,7 @@ import edu.elte.thesis.graph.generator.RecursiveBacktrackerGenerator;
 import edu.elte.thesis.graph.generator.SidewinderGenerator;
 import edu.elte.thesis.messaging.json.JsonObjectMarshaller;
 import edu.elte.thesis.model.Maze;
-import edu.elte.thesis.model.BinarizedMaze;
+import edu.elte.thesis.graph.utils.BinarizedMaze;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 

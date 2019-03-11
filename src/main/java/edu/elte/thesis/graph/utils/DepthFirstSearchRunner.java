@@ -1,5 +1,6 @@
 package edu.elte.thesis.graph.utils;
 
+import edu.elte.thesis.exception.MultipleRootsException;
 import edu.elte.thesis.model.Maze;
 import edu.elte.thesis.model.graph.CellNode;
 import org.apache.logging.log4j.LogManager;
@@ -33,7 +34,14 @@ public class DepthFirstSearchRunner {
         List<CellNode> visitedCells = new ArrayList<>();
         Stack<CellNode> stack = new Stack<>();
 
-        CellNode root = maze.findRoot();
+        CellNode root;
+        try {
+            root = maze.findRoot();
+        } catch (MultipleRootsException exception) {
+            LOGGER.error(exception.getMessage());
+            return false;
+        }
+
         stack.push(root);
 
         while (!stack.isEmpty()) {
