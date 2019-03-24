@@ -22,12 +22,7 @@ before_install:
 - echo "048ca52ca279e53beef7c6a63036df5771d12dbc1ec223ec97569802e7055e52 $HOME/.downloads/xswingx-0.2.zip" | sha256sum -c
 - mkdir -p $HOME/lib/jvm/jdesktop/jre/lib/xswingx
 - unzip -o $HOME/.downloads/xswingx-0.2.zip -d $HOME/lib/jvm/jdesktop/jre/lib/xswingx
-- mvn org.apache.maven.plugins:maven-install-plugin:3.0.0-M1:install-file  -Dfile=$HOME/lib/jvm/jdesktop/jre/lib/xswingx/xswingx.jar \
-  -DgroupId=org.jdesktop \
-  -DartifactId=xswingx \
-  -Dversion=0.2 \
-  -Dpackaging=jar \
-  -DgeneratePom=true
+- mvn org.apache.maven.plugins:maven-install-plugin:3.0.0-M1:install-file  -Dfile=$HOME/lib/jvm/jdesktop/jre/lib/xswingx/xswingx.jar -DgroupId=org.jdesktop -DartifactId=xswingx -Dversion=0.2 -Dpackaging=jar -DgeneratePom=true
 - mvn validate
 
 before_script:
