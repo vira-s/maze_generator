@@ -6,9 +6,10 @@ import edu.elte.thesis.graph.generator.MazeGenerator;
 import edu.elte.thesis.graph.generator.RandomWalkGenerator;
 import edu.elte.thesis.graph.generator.RecursiveBacktrackerGenerator;
 import edu.elte.thesis.graph.generator.SidewinderGenerator;
+import edu.elte.thesis.graph.utils.BinarizedMaze;
+import edu.elte.thesis.utils.MazeGeneratorAlgorithmName;
 import edu.elte.thesis.messaging.json.JsonObjectMarshaller;
 import edu.elte.thesis.model.Maze;
-import edu.elte.thesis.graph.utils.BinarizedMaze;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.StopWatch;
 
@@ -29,12 +30,6 @@ public class DemoApplication {
 
     private static final String FILE_PATH = new File("").getAbsolutePath() + "\\src\\main\\resources\\edu\\elte\\thesis\\generated\\";
     private static final String RUN_TIMES_FILE_NAME = FILE_PATH + "runTimes.txt";
-
-    private static final String HUNT_AND_KILL = "huntAndKill";
-    private static final String GROWING_TREE = "growingTree";
-    private static final String RANDOM_WALK = "randomWalk";
-    private static final String SIDEWINDER = "sidewinder";
-    private static final String RECURSIVE_BACKTRACKER = "recursiveBacktracker";
 
     private static HuntAndKillGenerator huntAndKillGenerator;
     private static GrowingTreeGenerator growingTreeGenerator;
@@ -61,28 +56,51 @@ public class DemoApplication {
         int numberOfRuns = 50000;
         int repeatCount = 10;
 
-        run(size, numberOfRuns, repeatCount, HUNT_AND_KILL, huntAndKillGenerator);
+        run(size,
+            numberOfRuns,
+            repeatCount,
+            MazeGeneratorAlgorithmName.HUNT_AND_KILL,
+            huntAndKillGenerator);
 
-        run(size, numberOfRuns, repeatCount, GROWING_TREE, growingTreeGenerator);
+        run(size,
+            numberOfRuns,
+            repeatCount,
+            MazeGeneratorAlgorithmName.GROWING_TREE,
+            growingTreeGenerator);
 
-        run(size, numberOfRuns, repeatCount, RANDOM_WALK, randomWalkGenerator);
+        run(size,
+            numberOfRuns,
+            repeatCount,
+            MazeGeneratorAlgorithmName.RANDOM_WALK,
+            randomWalkGenerator);
 
-        run(size, numberOfRuns, repeatCount, SIDEWINDER, sidewinderGenerator);
+        run(size,
+            numberOfRuns,
+            repeatCount,
+            MazeGeneratorAlgorithmName.SIDEWINDER,
+            sidewinderGenerator);
 
-        run(size, numberOfRuns, repeatCount, RECURSIVE_BACKTRACKER, recursiveBacktrackerGenerator);
+        run(size,
+            numberOfRuns,
+            repeatCount,
+            MazeGeneratorAlgorithmName.RECURSIVE_BACKTRACKER,
+            recursiveBacktrackerGenerator);
 
     }
 
     private static void run(int size,
                             int numberOfRuns,
                             int repeatCount,
-                            String algorithmName,
+                            MazeGeneratorAlgorithmName algorithmName,
                             MazeGenerator mazeGenerator) throws IOException {
         File file = new File(RUN_TIMES_FILE_NAME);
         String time;
 
         for (int counter = 0; counter < repeatCount; ++counter) {
-            File mazeFile = new File(FILE_PATH + algorithmName + "_" + size + "x" + size + "_" + counter + ".txt");
+            File mazeFile = new File(FILE_PATH
+                    + algorithmName.getShortName() + "_"
+                    + size + "x" + size + "_"
+                    + counter + ".txt");
 
             stopWatch.start();
             runGenerate(numberOfRuns, size, mazeGenerator, mazeFile);
@@ -91,7 +109,7 @@ public class DemoApplication {
             time = convertNanosecondsToReadableFormat(stopWatch.getNanoTime());
             String data = "[" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace("T", " ") + "]: "
                     + time + " - "
-                    + algorithmName + " - "
+                    + algorithmName.getShortName() + " - "
                     + size + "x" + size + " - "
                     + numberOfRuns + " pcs.";
             FileUtils.writeStringToFile(file, data + "\n", StandardCharsets.UTF_8, true);
@@ -100,7 +118,10 @@ public class DemoApplication {
         }
     }
 
-    private static void runGenerate(int numberOfRuns, int size, MazeGenerator mazeGenerator, File mazeFile) throws IOException {
+    private static void runGenerate(int numberOfRuns,
+                                    int size,
+                                    MazeGenerator mazeGenerator,
+                                    File mazeFile) throws IOException {
         for (int counter = 0; counter < numberOfRuns; ++counter) {
             Maze maze = mazeGenerator.generate(size, size);
 
