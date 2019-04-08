@@ -32,7 +32,6 @@ public class TestBinarizedMaze {
 
     @Before
     public void setUp() {
-        binarizedMazeUT = new BinarizedMaze();
         depthFirstSearchRunnerUT = new DepthFirstSearchRunner();
 
         acyclicMaze = new Maze(2, 2, DummyFactory.getAcyclicNodes());
@@ -42,7 +41,8 @@ public class TestBinarizedMaze {
 
     @Test
     public void testCreateGraphFromBinarizedMaze_acyclicMaze() {
-        //DummyFactory.ACYCLIC_MAZE
+        binarizedMazeUT = new BinarizedMaze(DummyFactory.ACYCLIC_MAZE);
+
         Maze resultMaze = binarizedMazeUT.createGraphFromBinarizedMaze();
         assertEqualsMazesParentInsensitive(acyclicMaze, resultMaze);
 
@@ -52,7 +52,8 @@ public class TestBinarizedMaze {
 
     @Test
     public void testCreateGraphFromBinarizedMaze_cyclicMaze() {
-        //DummyFactory.CYCLIC_MAZE
+        binarizedMazeUT = new BinarizedMaze(DummyFactory.CYCLIC_MAZE);
+
         Maze resultMaze = binarizedMazeUT.createGraphFromBinarizedMaze();
         assertEqualsMazesParentInsensitive(cyclicMaze, resultMaze);
 
@@ -62,7 +63,8 @@ public class TestBinarizedMaze {
 
     @Test
     public void testCreateGraphFromBinarizedMaze_disconnectedMaze() {
-        //DummyFactory.DISCONNECTED_MAZE
+        binarizedMazeUT = new BinarizedMaze(DummyFactory.DISCONNECTED_MAZE);
+
         Maze resultMaze = binarizedMazeUT.createGraphFromBinarizedMaze();
         assertEqualsMazesParentInsensitive(disconnectedMaze, resultMaze);
 
