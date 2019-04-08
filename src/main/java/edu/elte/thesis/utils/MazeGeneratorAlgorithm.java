@@ -11,7 +11,7 @@ import java.util.stream.Stream;
 /**
  * @author Viktoria Sinkovics
  */
-public enum MazeGeneratorAlgorithmName {
+public enum MazeGeneratorAlgorithm {
 
     HUNT_AND_KILL("huntAndKill"),
 
@@ -25,23 +25,24 @@ public enum MazeGeneratorAlgorithmName {
 
     private final String shortName;
 
-    MazeGeneratorAlgorithmName(String shortName) {
-        this.shortName = shortName;
-    }
 
-    public static Stream<MazeGeneratorAlgorithmName> getSortedValues() {
-        return Arrays.stream(MazeGeneratorAlgorithmName.values())
-                .sorted(Comparator.comparing(MazeGeneratorAlgorithmName::getShortName));
+    MazeGeneratorAlgorithm(String shortName) {
+        this.shortName = shortName;
     }
 
     public String getShortName() {
         return shortName;
     }
 
-    public Optional<MazeGeneratorAlgorithmName> findByShortName(String shortName) {
+    public static Stream<MazeGeneratorAlgorithm> getSortedValues() {
+        return Arrays.stream(MazeGeneratorAlgorithm.values())
+                .sorted(Comparator.comparing(MazeGeneratorAlgorithm::getShortName));
+    }
+
+    public static Optional<MazeGeneratorAlgorithm> findByShortName(String shortName) {
         Assert.notNull(shortName, "shortName should not be null.");
 
-        return Arrays.stream(MazeGeneratorAlgorithmName.values())
+        return Arrays.stream(MazeGeneratorAlgorithm.values())
                 .filter(value -> Objects.equals(value.shortName, shortName))
                 .findFirst();
     }

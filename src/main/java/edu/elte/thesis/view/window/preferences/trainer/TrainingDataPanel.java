@@ -5,14 +5,11 @@ import edu.elte.thesis.view.window.utils.WindowUtils;
 
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import javax.swing.border.TitledBorder;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
-import java.util.Arrays;
 
 /**
  * @author Viktoria Sinkovics
@@ -21,7 +18,7 @@ public class TrainingDataPanel extends JPanel {
 
     private static final int PANEL_WIDTH = 230;
 
-    private static final int PANEL_HEIGHT = 550;
+    private static final int PANEL_HEIGHT = 530;
 
     private static final String LOAD_TRAINING_DATA_TEXT = "Load Training Data";
 
@@ -96,8 +93,8 @@ public class TrainingDataPanel extends JPanel {
     private void initLoadButton() {
         loadMazeRadioButton = new JRadioButton(LOAD_TRAINING_DATA_TEXT);
         loadMazeRadioButton.addActionListener(event -> {
-            disablePanel(generationFieldPanel);
-            enablePanel(fileLoaderPanel);
+            WindowUtils.disablePanel(generationFieldPanel);
+            WindowUtils.enablePanel(fileLoaderPanel);
 
             revalidate();
             repaint();
@@ -107,8 +104,8 @@ public class TrainingDataPanel extends JPanel {
     private void initGenerateButton() {
         generateMazeRadioButton = new JRadioButton(GENERATE_TRAINING_DATA_TEXT);
         generateMazeRadioButton.addActionListener(event -> {
-            enablePanel(generationFieldPanel);
-            disablePanel(fileLoaderPanel);
+            WindowUtils.enablePanel(generationFieldPanel);
+            WindowUtils.disablePanel(fileLoaderPanel);
 
             revalidate();
             repaint();
@@ -129,7 +126,7 @@ public class TrainingDataPanel extends JPanel {
                 1,
                 GridBagConstraints.HORIZONTAL,
                 GridBagConstraints.CENTER);
-        fileFieldConstraints.insets = new Insets(0, 0, 10, 0);
+        fileFieldConstraints.insets = new Insets(0, 0, 5, 0);
 
         add(fileLoaderPanel, fileFieldConstraints);
     }
@@ -152,20 +149,7 @@ public class TrainingDataPanel extends JPanel {
 
         add(generationFieldPanel, generationFieldsConstraints);
 
-        disablePanel(generationFieldPanel);
+        WindowUtils.disablePanel(generationFieldPanel);
     }
 
-    private void enablePanel(JPanel panel) {
-        Arrays.stream(panel.getComponents())
-                .forEach(component -> component.setEnabled(true));
-        TitledBorder border = (TitledBorder) panel.getBorder();
-        border.setTitleColor(Color.BLACK);
-    }
-
-    private void disablePanel(JPanel panel) {
-        Arrays.stream(panel.getComponents())
-                .forEach(component -> component.setEnabled(false));
-        TitledBorder border = (TitledBorder) panel.getBorder();
-        border.setTitleColor(Color.GRAY);
-    }
 }

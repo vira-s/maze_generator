@@ -7,11 +7,16 @@ import edu.elte.thesis.view.window.preferences.MazePreferenceTabbedPane;
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 
 /**
  * @author Viktoria Sinkovics
  */
 public class MazeWindow extends JFrame {
+
+    private static final int WINDOW_WIDTH = 1000;
+
+    private static final int WINDOW_HEIGHT = 800;
 
     private MazeController mazeController;
 
@@ -27,7 +32,7 @@ public class MazeWindow extends JFrame {
 
         infoPanel = mazeController.createInfoPanel();
         mazePreferenceTabbedPane = mazeController.createMazePreferenceTabbedPane();
-        mazeBoard = mazeController.createMazeBoard();
+        mazeBoard = mazeController.createDefaultMazeBoard();
 
         add(infoPanel, BorderLayout.NORTH);
         add(mazePreferenceTabbedPane, BorderLayout.WEST);
@@ -51,7 +56,11 @@ public class MazeWindow extends JFrame {
     }
 
     private void setDimensions() {
-        setPreferredSize(new Dimension(1000, 800));
         setResizable(false);
+        setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
+
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        setLocation(screenSize.width / 2 - WINDOW_WIDTH / 2,
+                screenSize.height / 2 - WINDOW_HEIGHT / 2);
     }
 }

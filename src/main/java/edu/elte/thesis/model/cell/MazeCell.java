@@ -96,7 +96,7 @@ public class MazeCell {
      * Marks the cell as already visited.
      */
     public void markAsVisited() {
-        LOGGER.info("Marking cell as visited ({},{})", this.column, this.row);
+        LOGGER.debug("Marking cell as visited ({},{})", this.column, this.row);
 
         this.visited = true;
     }

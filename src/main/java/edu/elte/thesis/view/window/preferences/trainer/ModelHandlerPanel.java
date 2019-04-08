@@ -1,10 +1,12 @@
 package edu.elte.thesis.view.window.preferences.trainer;
 
-import edu.elte.thesis.view.window.preferences.FileLoaderPanel;
 import edu.elte.thesis.view.window.utils.WindowUtils;
 
+import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JSpinner;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -16,13 +18,17 @@ public class ModelHandlerPanel extends JPanel {
 
     private static final Integer PANEL_WIDTH = 230;
 
-    private static final Integer PANEL_HEIGHT = 120;
+    private static final Integer PANEL_HEIGHT = 100;
 
-    private JRadioButton existingModel;
+    private JRadioButton existingModelButton;
 
-    private JRadioButton newModel;
+    private JRadioButton newModelButton;
 
-    private FileLoaderPanel fileLoaderPanel;
+    private JLabel epochSpinnerLabel;
+
+    private JSpinner epochSpinner;
+
+    private JCheckBox vaeDefaultModelCheckBox;
 
     public ModelHandlerPanel() {
         setLayout(new GridLayout(0, 1));
@@ -30,39 +36,73 @@ public class ModelHandlerPanel extends JPanel {
         setBorder(WindowUtils.createTitledBorder("VAE Preferences"));
 
         initRadioButtons();
-        initFileFields();
+        initEpochFields();
+        initVaeDefaultCheckbox();
     }
 
-    public JRadioButton getExistingModel() {
-        return existingModel;
+    public JRadioButton getExistingModelButton() {
+        return existingModelButton;
     }
 
-    public JRadioButton getNewModel() {
-        return newModel;
+    public JRadioButton getNewModelButton() {
+        return newModelButton;
     }
 
-    public FileLoaderPanel getFileLoaderPanel() {
-        return fileLoaderPanel;
+    public JLabel getEpochSpinnerLabel() {
+        return epochSpinnerLabel;
+    }
+
+    public JSpinner getEpochSpinner() {
+        return epochSpinner;
+    }
+
+    public JCheckBox getVaeDefaultModelCheckBox() {
+        return vaeDefaultModelCheckBox;
     }
 
     private void initRadioButtons() {
-        existingModel = new JRadioButton("Load Existing Model");
-        newModel = new JRadioButton("Train New Model");
+        existingModelButton = new JRadioButton("Train Existing Model");
+        existingModelButton.addActionListener(event -> {
+            vaeDefaultModelCheckBox.setEnabled(true);
+            revalidate();
+            repaint();
+        });
 
-        WindowUtils.createButtonGroup(existingModel, newModel);
+        newModelButton = new JRadioButton("Train New Model");
+        newModelButton.addActionListener(event -> {
+            vaeDefaultModelCheckBox.setEnabled(false);
+            revalidate();
+            repaint();
+        });
+
+        WindowUtils.createButtonGroup(existingModelButton, newModelButton);
 
         JPanel radioPanel = WindowUtils.createSmallUtilityPanel();
+        radioPanel.setPreferredSize(new Dimension(230, 30));
 
-        radioPanel.add(existingModel);
-        radioPanel.add(newModel);
+        radioPanel.add(existingModelButton);
+        radioPanel.add(newModelButton);
 
         add(radioPanel, BorderLayout.NORTH);
 
     }
 
-    private void initFileFields() {
-        fileLoaderPanel = new FileLoaderPanel("Model's file: ");
-
-        add(fileLoaderPanel, BorderLayout.CENTER);
+    private void initVaeDefaultCheckbox() {
+        vaeDefaultModelCheckBox = new JCheckBox("Generate with default model if present");
+        add(vaeDefaultModelCheckBox, BorderLayout.CENTER);
     }
+
+    private void initEpochFields() {
+        epochSpinnerLabel = new JLabel("Training epochs:");
+        epochSpinner = new JSpinner(WindowUtils.getEpochSpinnerModel());
+
+        JPanel epochPanel = WindowUtils.createSmallUtilityPanel();
+        epochPanel.setPreferredSize(new Dimension(230, 30));
+
+        epochPanel.add(epochSpinnerLabel, BorderLayout.NORTH);
+        epochPanel.add(epochSpinner, BorderLayout.SOUTH);
+
+        add(epochPanel, BorderLayout.SOUTH);
+    }
+
 }

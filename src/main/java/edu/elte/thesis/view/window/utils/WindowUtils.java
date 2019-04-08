@@ -140,10 +140,36 @@ public class WindowUtils {
     }
 
     public static SpinnerModel getMazeSizeSpinnerModel() {
-        return new SpinnerNumberModel(2, 2, 1000, 1);
+        return new SpinnerNumberModel(5, 5, 100, 1);
     }
 
     public static SpinnerModel getMazeCountSpinnerModel() {
-        return new SpinnerNumberModel(50000, 50000, 500000, 50000);
+        return new SpinnerNumberModel(10000, 10000, 500000, 1000);
+    }
+
+    public static SpinnerModel getEpochSpinnerModel() {
+        return new SpinnerNumberModel(20, 5, 1000, 1);
+    }
+
+    public static void enablePanel(JPanel panel) {
+        Arrays.stream(panel.getComponents())
+                .forEach(component -> component.setEnabled(true));
+
+        Border border = panel.getBorder();
+        if (border instanceof TitledBorder) {
+            TitledBorder titledBorder = (TitledBorder) panel.getBorder();
+            titledBorder.setTitleColor(Color.BLACK);
+        }
+    }
+
+    public static void disablePanel(JPanel panel) {
+        Arrays.stream(panel.getComponents())
+                .forEach(component -> component.setEnabled(false));
+
+        Border border = panel.getBorder();
+        if (border instanceof TitledBorder) {
+            TitledBorder titledBorder = (TitledBorder) panel.getBorder();
+            titledBorder.setTitleColor(Color.GRAY);
+        }
     }
 }

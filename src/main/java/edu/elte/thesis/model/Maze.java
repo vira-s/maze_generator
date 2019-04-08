@@ -116,7 +116,7 @@ public class Maze {
     public List<CellNode> findUnvisitedNeighboursOf(MazeCell mazeCell) {
         Assert.notNull(mazeCell, "mazeCell should not be null.");
 
-        LOGGER.info("Looking for unvisited neighbours of ({},{})", mazeCell.getColumn(), mazeCell.getRow());
+        LOGGER.debug("Looking for unvisited neighbours of ({},{})", mazeCell.getColumn(), mazeCell.getRow());
 
         return findNeighboursOf(mazeCell).stream()
                 .filter(cellNode -> !cellNode.isVisited())

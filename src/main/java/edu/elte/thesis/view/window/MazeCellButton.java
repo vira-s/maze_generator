@@ -3,13 +3,13 @@ package edu.elte.thesis.view.window;
 import edu.elte.thesis.controller.MazeController;
 import edu.elte.thesis.model.cell.Wall;
 import edu.elte.thesis.model.cell.WallPosition;
-import org.springframework.util.Assert;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import java.awt.Color;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Viktoria Sinkovics
@@ -24,7 +24,9 @@ public class MazeCellButton extends JButton {
 
     private List<Wall> walls;
 
-    public MazeCellButton(MazeController controller, Integer column, Integer row) {
+    public MazeCellButton(MazeController controller,
+                          Integer column,
+                          Integer row, double cellSize) {
         this.column = column;
         this.row = row;
         this.controller = controller;
@@ -35,8 +37,30 @@ public class MazeCellButton extends JButton {
                 new Wall(WallPosition.WEST));
 
         this.setEnabled(false);
-        this.setBackground(Color.WHITE);
-        this.setBorder(BorderFactory.createMatteBorder(2, 2, 2, 2, Color.BLACK));
+        this.setBackground(Color.LIGHT_GRAY);
+        this.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, Color.BLACK));
+    }
+
+    public MazeCellButton(MazeController controller,
+                          Integer column,
+                          Integer row,
+                          List<Wall> walls, double cellSize) {
+        this.column = column;
+        this.row = row;
+        this.controller = controller;
+        this.walls = walls.stream()
+                .map(wall -> new Wall(wall.getPosition(), wall.isVisible()))
+                .collect(Collectors.toList());
+
+        this.setEnabled(false);
+        this.setBackground(Color.LIGHT_GRAY);
+
+        this.setBorder(BorderFactory.createMatteBorder(
+                getWall(WallPosition.NORTH).isVisible() ? 1 : 0,
+                getWall(WallPosition.WEST).isVisible()  ? 1 : 0,
+                getWall(WallPosition.SOUTH).isVisible()  ? 1 : 0,
+                getWall(WallPosition.EAST).isVisible()  ? 1 : 0,
+                Color.BLACK));
     }
 
     public MazeController getController() {
@@ -55,19 +79,11 @@ public class MazeCellButton extends JButton {
         return walls;
     }
 
-    public void removeWallAt(WallPosition... wallPositions) {
-        Assert.notNull(wallPositions, "wallPositions should not be null.");
-        List<WallPosition> positions = Arrays.asList(wallPositions);
-
-        this.walls.stream()
-                .filter(wall -> positions.contains(wall.getPosition()))
-                .forEach(Wall::setInvisible);
-
-        this.setBorder(BorderFactory.createMatteBorder(
-                positions.contains(WallPosition.NORTH) ? 0 : 2,
-                positions.contains(WallPosition.WEST) ? 0 : 2,
-                positions.contains(WallPosition.SOUTH) ? 0 : 2,
-                positions.contains(WallPosition.EAST) ? 0 : 2,
-                Color.BLACK));
+    private Wall getWall(WallPosition wallPosition) {
+        return this.walls.stream()
+                .filter(w -> w.getPosition() == wallPosition)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("Missing wall at {}" + wallPosition));
     }
+
 }

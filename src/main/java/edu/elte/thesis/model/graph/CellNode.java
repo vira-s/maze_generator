@@ -32,47 +32,51 @@ public class CellNode extends Node<MazeCell> {
     }
 
     public int getColumn() {
-        return this.entity.getColumn();
+        return entity.getColumn();
     }
 
     public int getRow() {
-        return this.entity.getRow();
+        return entity.getRow();
+    }
+
+    public List<Wall> getWalls() {
+        return entity.getWalls();
     }
 
     public boolean isVisited() {
-        return this.entity.isVisited();
+        return entity.isVisited();
     }
 
     public void markAsVisited() {
-        this.entity.markAsVisited();
+        entity.markAsVisited();
     }
 
     public boolean isNeighbourOf(MazeCell mazeCell) {
-        return this.entity.isNeighbourOf(mazeCell);
+        return entity.isNeighbourOf(mazeCell);
     }
 
     public boolean isUpperNeighbourOf(CellNode nextCell) {
-        return this.entity.isUpperNeighbourOf(nextCell.entity);
+        return entity.isUpperNeighbourOf(nextCell.entity);
     }
 
     public boolean isLowerNeighbourOf(CellNode nextCell) {
-        return this.entity.isLowerNeighbourOf(nextCell.entity);
+        return entity.isLowerNeighbourOf(nextCell.entity);
     }
 
     public boolean isLeftNeighbourOf(CellNode nextCell) {
-        return this.entity.isLeftNeighbourOf(nextCell.entity);
+        return entity.isLeftNeighbourOf(nextCell.entity);
     }
 
     public boolean isRightNeighbourOf(CellNode nextCell) {
-        return this.entity.isRightNeighbourOf(nextCell.entity);
+        return entity.isRightNeighbourOf(nextCell.entity);
     }
 
     public void removeWall(WallPosition wallPosition) {
-        this.entity.removeWall(wallPosition);
+        entity.removeWall(wallPosition);
     }
 
     public Wall getWallByPosition(WallPosition wallPosition) {
-        return this.entity.getWallByPosition(wallPosition);
+        return entity.getWallByPosition(wallPosition);
     }
 
     public void print(String prefix, boolean isTail) {

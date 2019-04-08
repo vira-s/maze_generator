@@ -1,6 +1,6 @@
 package edu.elte.thesis.view.window.preferences.trainer;
 
-import edu.elte.thesis.utils.MazeGeneratorAlgorithmName;
+import edu.elte.thesis.utils.MazeGeneratorAlgorithm;
 import edu.elte.thesis.view.window.utils.WindowUtils;
 import org.springframework.util.Assert;
 
@@ -23,7 +23,7 @@ public class MazeGenerationHandlerPanel extends JPanel {
 
     private static final Integer PANEL_WIDTH = 230;
 
-    private static final int PANEL_HEIGHT = 270;
+    private static final int PANEL_HEIGHT = 250;
 
     private JLabel algorithmSelectorLabel;
 
@@ -101,7 +101,7 @@ public class MazeGenerationHandlerPanel extends JPanel {
         spinnerTextField.setEditable(false);
         spinnerTextField.setBackground(Color.WHITE);
 
-        add(mazeCountToGenerateLabel, BorderLayout.NORTH);
+        add(mazeCountToGenerateLabel, BorderLayout.AFTER_LAST_LINE);
         add(mazeCountToGenerateSpinner, BorderLayout.AFTER_LAST_LINE);
     }
 
@@ -110,7 +110,7 @@ public class MazeGenerationHandlerPanel extends JPanel {
         add(algorithmSelectorLabel, BorderLayout.AFTER_LINE_ENDS);
 
         algorithmNameCheckBoxes = new ArrayList<>();
-        MazeGeneratorAlgorithmName.getSortedValues()
+        MazeGeneratorAlgorithm.getSortedValues()
                 .forEach(value -> {
                     JCheckBox jCheckBox = new JCheckBox(value.getShortName());
                     algorithmNameCheckBoxes.add(jCheckBox);

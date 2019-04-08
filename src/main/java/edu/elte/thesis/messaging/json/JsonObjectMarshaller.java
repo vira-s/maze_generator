@@ -1,5 +1,7 @@
 package edu.elte.thesis.messaging.json;
 
+import org.eclipse.persistence.jaxb.JAXBContextFactory;
+import org.eclipse.persistence.jaxb.xmlmodel.ObjectFactory;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -9,6 +11,8 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Viktoria Sinkovics
@@ -33,7 +37,12 @@ public class JsonObjectMarshaller {
         this.clazz = clazz;
 
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(clazz);
+
+            Map<String, Object> properties = new HashMap<>();
+            properties.put(ECLIPSELINK_MEDIA_TYPE, JSON_FORMAT);
+            properties.put(ECLIPSELINK_JSON_INCLUDE_ROOT, false);
+
+            JAXBContext jaxbContext = JAXBContextFactory.createContext(new Class[]{clazz, ObjectFactory.class}, properties);
             this.marshaller = jaxbContext.createMarshaller();
             this.unmarshaller = jaxbContext.createUnmarshaller();
 

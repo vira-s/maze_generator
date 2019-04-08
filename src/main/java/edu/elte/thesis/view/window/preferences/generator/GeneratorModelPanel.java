@@ -1,7 +1,10 @@
 package edu.elte.thesis.view.window.preferences.generator;
 
-import edu.elte.thesis.utils.MazeGeneratorAlgorithmName;
-import edu.elte.thesis.view.window.preferences.FileLoaderPanel;
+import edu.elte.thesis.controller.MazeController;
+import edu.elte.thesis.utils.MazeGeneratorAlgorithm;
+import edu.elte.thesis.view.event.GenerateWithAlgorithmButtonAction;
+import edu.elte.thesis.view.event.GenerateWithVaeButtonAction;
+import edu.elte.thesis.view.window.preferences.MazePreferenceTabbedPane;
 import edu.elte.thesis.view.window.utils.WindowUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,10 +12,12 @@ import org.apache.logging.log4j.Logger;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -34,11 +39,9 @@ public class GeneratorModelPanel extends JPanel {
 
     private static final String GENERATE_BUTTON_TEXT = "Generate";
 
-    private FileLoaderPanel vaeLoaderPanel;
+    private final MazePreferenceTabbedPane parent;
 
     private JPanel algorithmPanel;
-
-    private JLabel mazeSizeLabel;
 
     private JSpinner mazeSizeSpinner;
 
@@ -46,15 +49,23 @@ public class GeneratorModelPanel extends JPanel {
 
     private JButton algorithmGenerateButton;
 
+    private JPanel vaeLoaderPanel;
+
+    private JSpinner vaeMazeSizeSpinner;
+
+    private JCheckBox vaeDefaultModelCheckBox;
+
     private JButton vaeGenerateButton;
 
-    public GeneratorModelPanel() {
+    public GeneratorModelPanel(MazePreferenceTabbedPane parent) {
+        this.parent = parent;
+
         setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
 
         initAlgorithmSelectorPanel();
-        initFilePanel();
+        initVaePanel();
 
         revalidate();
         repaint();
@@ -62,16 +73,24 @@ public class GeneratorModelPanel extends JPanel {
         initDummyPanel();
     }
 
-    public FileLoaderPanel getVaeLoaderPanel() {
+    public MazePreferenceTabbedPane getParent() {
+        return parent;
+    }
+
+    public JPanel getVaeLoaderPanel() {
         return vaeLoaderPanel;
+    }
+
+    public JSpinner getVaeMazeSizeSpinner() {
+        return vaeMazeSizeSpinner;
+    }
+
+    public JCheckBox getVaeDefaultModelCheckBox() {
+        return vaeDefaultModelCheckBox;
     }
 
     public JPanel getAlgorithmPanel() {
         return algorithmPanel;
-    }
-
-    public JLabel getMazeSizeLabel() {
-        return mazeSizeLabel;
     }
 
     public JSpinner getMazeSizeSpinner() {
@@ -90,13 +109,17 @@ public class GeneratorModelPanel extends JPanel {
         return vaeGenerateButton;
     }
 
+    public MazeController getController() {
+        return parent.getController();
+    }
+
     private void initAlgorithmSelectorPanel() {
         algorithmPanel = new JPanel();
         algorithmPanel.setPreferredSize(new Dimension(230, ALGO_PANEL_HEIGHT));
         algorithmPanel.setLayout(new GridLayout(0, 1));
         algorithmPanel.setBorder(WindowUtils.createTitledBorder("Generate with algorithm"));
 
-        mazeSizeLabel = new JLabel("Size of the mazes: ");
+        JLabel mazeSizeLabel = new JLabel("Size of the mazes: ");
         mazeSizeSpinner = new JSpinner(WindowUtils.getMazeSizeSpinnerModel());
 
         algorithmPanel.add(mazeSizeLabel);
@@ -105,7 +128,7 @@ public class GeneratorModelPanel extends JPanel {
         algorithmNameRadioButtons = new ArrayList<>();
         ButtonGroup radioButtonGroup = new ButtonGroup();
 
-        MazeGeneratorAlgorithmName.getSortedValues()
+        MazeGeneratorAlgorithm.getSortedValues()
                 .forEach(value -> {
                     JRadioButton radioButton = new JRadioButton(value.getShortName());
 
@@ -126,25 +149,48 @@ public class GeneratorModelPanel extends JPanel {
         add(algorithmPanel, algorithmPanelConstraints);
 
         GridBagConstraints generateButtonConstraints = initGenerateButtonConstraints(6);
-        algorithmGenerateButton = new JButton(GENERATE_BUTTON_TEXT);
+        algorithmGenerateButton = new JButton();
+        algorithmGenerateButton.setAction(new GenerateWithAlgorithmButtonAction(this));
+        algorithmGenerateButton.setText(GENERATE_BUTTON_TEXT);
         add(algorithmGenerateButton, generateButtonConstraints);
     }
 
-    private void initFilePanel() {
-        vaeLoaderPanel = new FileLoaderPanel("Generate with Model", "Model's file: ", 14);
+    private void initVaePanel() {
+        vaeLoaderPanel = new JPanel();
+        vaeLoaderPanel.setLayout(new GridLayout(3, 1));
+        vaeLoaderPanel.setPreferredSize(new Dimension(230, 100));
+        vaeLoaderPanel.setBorder(WindowUtils.createTitledBorder("Generate with CVAE",
+                Color.BLACK,
+                14,
+                1,
+                1,
+                1,
+                1));
 
-        GridBagConstraints fileFieldsConstraints = WindowUtils.createConstraints(2,
+
+        JLabel vaeMazeSizeLabel = new JLabel("Size of the mazes: ");
+        vaeMazeSizeSpinner = new JSpinner(WindowUtils.getMazeSizeSpinnerModel());
+        vaeDefaultModelCheckBox = new JCheckBox("Generate with default model if present");
+
+        vaeLoaderPanel.add(vaeMazeSizeLabel);
+        vaeLoaderPanel.add(vaeMazeSizeSpinner);
+        vaeLoaderPanel.add(vaeDefaultModelCheckBox);
+
+
+        GridBagConstraints vaeFieldConstraints = WindowUtils.createConstraints(3,
                 2,
                 0,
                 7,
                 GridBagConstraints.HORIZONTAL,
                 GridBagConstraints.CENTER);
-        add(vaeLoaderPanel, fileFieldsConstraints);
-        fileFieldsConstraints.insets = new Insets(5, 0, 10, 0);
+        add(vaeLoaderPanel, vaeFieldConstraints);
+        vaeFieldConstraints.insets = new Insets(5, 0, 10, 0);
 
-        GridBagConstraints generateButtonConstraints = initGenerateButtonConstraints(9);
+        GridBagConstraints generateButtonConstraints = initGenerateButtonConstraints(10);
 
-        vaeGenerateButton = new JButton(GENERATE_BUTTON_TEXT);
+        vaeGenerateButton = new JButton();
+        vaeGenerateButton.setAction(new GenerateWithVaeButtonAction(this));
+        vaeGenerateButton.setText(GENERATE_BUTTON_TEXT);
         add(vaeGenerateButton, generateButtonConstraints);
     }
 
@@ -163,15 +209,15 @@ public class GeneratorModelPanel extends JPanel {
 
     private void initDummyPanel() {
         JPanel dummyPanel = new JPanel();
-        dummyPanel.setPreferredSize(new Dimension(PANEL_WIDTH, 300));
+        dummyPanel.setPreferredSize(new Dimension(PANEL_WIDTH, 200));
 
-        GridBagConstraints dummyConstraints = WindowUtils.createConstraints(10,
+        GridBagConstraints dummyConstraints = WindowUtils.createConstraints(8,
                 2,
                 0,
-                10,
+                11,
                 GridBagConstraints.BOTH,
                 GridBagConstraints.LAST_LINE_START);
-        dummyConstraints.ipadx = 230;
+        dummyConstraints.ipadx = 130;
         dummyConstraints.ipady = 250;
 
         add(dummyPanel, dummyConstraints);

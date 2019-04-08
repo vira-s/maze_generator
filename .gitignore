@@ -2,8 +2,9 @@
 target/
 venv/
 generated/
+data/
 neural_*/
-python/
+__pycache__/
 *.iml
 *.ipr
 *.iws

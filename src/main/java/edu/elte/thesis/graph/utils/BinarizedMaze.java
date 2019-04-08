@@ -43,6 +43,10 @@ public class BinarizedMaze {
         // Default NOOP constructor for JSON (un)marshaller
     }
 
+    public BinarizedMaze(List<String> binarizedMaze) {
+        this.binarizedMaze = binarizedMaze;
+    }
+
     /**
      * Creates a binarized representation of a {@link Maze ).
      *
@@ -111,24 +115,23 @@ public class BinarizedMaze {
      *
      * Note: The shape of the maze can be validated with the {@link edu.elte.thesis.graph.utils.DepthFirstSearchRunner}.
      *
-     * @param binaryMaze The binary representation of a maze
-     *
      * @return The graph representation of a maze
      */
-    public Maze createGraphFromBinarizedMaze(List<String> binaryMaze) {
-        Assert.notNull(binaryMaze, "binaryMaze should not be null.");
-        Assert.isTrue(!binaryMaze.isEmpty(), "binaryMaze should not be empty.");
+    public Maze createGraphFromBinarizedMaze() {
+        if (Objects.nonNull(binarizedMaze)) {
+            binarizedMaze = extractCoreBinarizedMaze(binarizedMaze);
+            LOGGER.debug("Extracted core binary maze: {}", binarizedMaze);
 
-        binarizedMaze = extractCoreBinarizedMaze(binaryMaze);
-        LOGGER.debug("Extracted core binary maze: {}", binarizedMaze);
+            int columns = (binarizedMaze.size() - 1) / 2;
+            int rows = (binarizedMaze.get(0).length() - 1) / 2;
 
-        int columns = (binarizedMaze.size() - 1) / 2;
-        int rows = (binarizedMaze.get(0).length() - 1) / 2;
+            Maze maze = createMazeTemplate(columns, rows);
+            setUpGraph(maze, 0, 0);
 
-        Maze maze = createMazeTemplate(columns, rows);
-        setUpGraph(maze, 0, 0);
+            return maze;
+        }
 
-        return maze;
+        return null;
     }
 
     /**
@@ -234,9 +237,9 @@ public class BinarizedMaze {
         List<Integer> extraElementsToTopRightBottomLeftHeader = new ArrayList<>();
 
         if (headerElementCount % 4 == 3) {
-            extraElementsToTopRightBottomLeftHeader.addAll(Arrays.asList(0, 1, 0, 0, headerElementCount + 1));
+            extraElementsToTopRightBottomLeftHeader.addAll(Arrays.asList(1, 1, 0, 0, headerElementCount + 1));
         } else if (headerElementCount % 4 == 2) {
-            extraElementsToTopRightBottomLeftHeader.addAll(Arrays.asList(1, 1, 1, 1, headerElementCount + 1));
+            extraElementsToTopRightBottomLeftHeader.addAll(Arrays.asList(1, 1, 1, 1, headerElementCount + 2));
         } else if (headerElementCount % 4 == 1) {
             extraElementsToTopRightBottomLeftHeader.addAll(Arrays.asList(2, 2, 1, 1, headerElementCount + 3));
         } else {

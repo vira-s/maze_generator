@@ -7,17 +7,17 @@ import java.awt.Component;
 /**
  * @author Viktoria Sinkovics
  */
-public class InformationPrinterDialog extends JDialog {
+public class ErrorDialog extends JDialog {
 
     private int answer;
 
-    public InformationPrinterDialog(Component parent, String text, String title) {
+    public ErrorDialog(Component parent, String text, String title) {
         answer = JOptionPane.showOptionDialog(
                 parent,
                 text,
                 title,
                 JOptionPane.OK_OPTION,
-                JOptionPane.INFORMATION_MESSAGE,
+                JOptionPane.ERROR_MESSAGE,
                 null,
                 new String[] {"OK"},
                 0);
