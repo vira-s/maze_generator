@@ -1,8 +1,8 @@
 package edu.elte.thesis.view.window.utils;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -57,15 +57,12 @@ public class WindowUtils {
                 anchor);
     }
 
-    public static JButton createButton(String label,
-                                       Color foregroundColor,
+    public static JButton createButton(Color foregroundColor,
                                        Color backgroundColor) {
-
-        Assert.isTrue(StringUtils.hasLength(label), "label should not be empty.");
         Assert.notNull(foregroundColor, "foregroundColor should not be null.");
         Assert.notNull(backgroundColor, "backgroundColor should not be null.");
 
-        JButton button = new JButton(label);
+        JButton button = new JButton();
         button.setForeground(foregroundColor);
         button.setBackground(backgroundColor);
 
@@ -73,9 +70,8 @@ public class WindowUtils {
 
     }
 
-    public static JButton createSubmitButton() {
-        JButton button = createButton("Submit",
-                new Color(0, 100, 0),
+    public static JButton createButton(String text, AbstractAction action) {
+        JButton button = createButton(new Color(0, 100, 0),
                 new Color(0, 100, 0, 50));
 
         Font submitFont = new Font(button.getFont().getName(),
@@ -83,13 +79,10 @@ public class WindowUtils {
                 button.getFont().getSize());
         button.setFont(submitFont);
 
-        return button;
-    }
+        button.setAction(action);
+        button.setText(text);
 
-    public static JButton createResetButton() {
-        return createButton("Reset",
-                new Color(150,100,0),
-                new Color(255,100,0, 50));
+        return button;
     }
 
     public static void createButtonGroup(JRadioButton... radioButtons) {

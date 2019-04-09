@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -27,15 +26,13 @@ public class PythonRunner {
 
     private static final String MAZE_GENERATOR_SCRIPT = ABSOLUTE_PATH + "\\src\\main\\resources\\edu\\elte\\thesis\\python\\maze_generator_cvae.py";
 
-    /**
-     * Executes the python script with the provided arguments.
-     *
-     * @param arguments The script arguments
-     */
-    public static int runPython(Map<String, String> arguments) {
+    private ArrayList<String> command;
+
+    public PythonRunner(Map<String, String> arguments) {
+
         Assert.notEmpty(arguments, "arguments should not be empty.");
 
-        List<String> command = new ArrayList<>();
+        command = new ArrayList<>();
         command.add("python");
         command.add(MAZE_GENERATOR_SCRIPT);
 
@@ -47,9 +44,9 @@ public class PythonRunner {
                 command.add(value);
             }
         });
+    }
 
-        LOGGER.info("Running python command: " + command);
-
+    public int runCommand() {
         ProcessBuilder processBuilder = new ProcessBuilder(command);
         processBuilder.redirectErrorStream(false);
         Process process = null;

@@ -1,7 +1,6 @@
 package edu.elte.thesis.view.window.preferences.trainer;
 
 import edu.elte.thesis.controller.MazeController;
-import edu.elte.thesis.view.event.ResetContentAction;
 import edu.elte.thesis.view.event.SubmitButtonAction;
 import edu.elte.thesis.view.window.preferences.MazePreferenceTabbedPane;
 import edu.elte.thesis.view.window.utils.WindowUtils;
@@ -26,9 +25,9 @@ public class ModelTrainerAndMazeGenerationPanel extends JPanel {
     private final MazePreferenceTabbedPane parent;
 
     private TrainingDataPanel trainingDataPanel;
+
     private ModelHandlerPanel generatorModelHandlerPanel;
 
-    private JButton resetButton;
     private JButton submitButton;
 
     public ModelTrainerAndMazeGenerationPanel(MazePreferenceTabbedPane parent) {
@@ -51,10 +50,6 @@ public class ModelTrainerAndMazeGenerationPanel extends JPanel {
 
     public ModelHandlerPanel getGeneratorModelHandlerPanel() {
         return generatorModelHandlerPanel;
-    }
-
-    public JButton getResetButton() {
-        return resetButton;
     }
 
     public JButton getSubmitButton() {
@@ -80,7 +75,7 @@ public class ModelTrainerAndMazeGenerationPanel extends JPanel {
                 0,
                 0,
                 GridBagConstraints.NORTH);
-        trainingDataPanelConstraints.insets = new Insets(0, 0, 5, 0);
+        trainingDataPanelConstraints.insets = new Insets(5, 0, 5, 0);
 
         add(trainingDataPanel, trainingDataPanelConstraints);
     }
@@ -92,7 +87,7 @@ public class ModelTrainerAndMazeGenerationPanel extends JPanel {
                 7,
                 GridBagConstraints.HORIZONTAL,
                 GridBagConstraints.CENTER);
-        generatorModelConstraints.insets = new Insets(5, 0, 5, 0);
+        generatorModelConstraints.insets = new Insets(10, 0, 5, 0);
 
         generatorModelHandlerPanel = new ModelHandlerPanel();
 
@@ -100,15 +95,6 @@ public class ModelTrainerAndMazeGenerationPanel extends JPanel {
     }
 
     private void initFinalizerButtons() {
-        GridBagConstraints resetButtonConstraints = WindowUtils.createConstraints(1,
-                1,
-                0,
-                9,
-                GridBagConstraints.LAST_LINE_START);
-        resetButtonConstraints.ipadx = 10;
-        resetButtonConstraints.ipady = 5;
-        resetButtonConstraints.insets = new Insets(10, 30, 5, 5);
-
         GridBagConstraints submitButtonConstraints = WindowUtils.createConstraints(1,
                 1,
                 1,
@@ -116,27 +102,15 @@ public class ModelTrainerAndMazeGenerationPanel extends JPanel {
                 GridBagConstraints.LAST_LINE_START);
         submitButtonConstraints.ipadx = 15;
         submitButtonConstraints.ipady = 5;
-        submitButtonConstraints.insets = new Insets(10, 5, 5, 10);
+        submitButtonConstraints.insets = new Insets(10, 80, 5, 10);
 
         initSubmitButton();
-        initResetButton();
 
-        add(resetButton, resetButtonConstraints);
         add(submitButton, submitButtonConstraints);
     }
 
     private void initSubmitButton() {
-        submitButton = WindowUtils.createSubmitButton();
-
-        submitButton.setAction(new SubmitButtonAction(this));
-
-        submitButton.setText("Submit");
-    }
-
-    private void initResetButton() {
-        resetButton = WindowUtils.createResetButton();
-        resetButton.setAction(new ResetContentAction());
-        resetButton.setText("Reset");
+        submitButton = WindowUtils.createButton("Submit", new SubmitButtonAction(this));
     }
 
 }

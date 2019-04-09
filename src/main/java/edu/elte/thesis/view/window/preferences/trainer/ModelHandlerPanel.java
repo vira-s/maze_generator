@@ -88,7 +88,7 @@ public class ModelHandlerPanel extends JPanel {
     }
 
     private void initVaeDefaultCheckbox() {
-        vaeDefaultModelCheckBox = new JCheckBox("Generate with default model if present");
+        vaeDefaultModelCheckBox = new JCheckBox("Use default model if present");
         add(vaeDefaultModelCheckBox, BorderLayout.CENTER);
     }
 

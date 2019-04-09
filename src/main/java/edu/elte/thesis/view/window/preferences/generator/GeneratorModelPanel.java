@@ -149,9 +149,9 @@ public class GeneratorModelPanel extends JPanel {
         add(algorithmPanel, algorithmPanelConstraints);
 
         GridBagConstraints generateButtonConstraints = initGenerateButtonConstraints(6);
-        algorithmGenerateButton = new JButton();
-        algorithmGenerateButton.setAction(new GenerateWithAlgorithmButtonAction(this));
-        algorithmGenerateButton.setText(GENERATE_BUTTON_TEXT);
+
+
+        algorithmGenerateButton = WindowUtils.createButton(GENERATE_BUTTON_TEXT, new GenerateWithAlgorithmButtonAction(this));
         add(algorithmGenerateButton, generateButtonConstraints);
     }
 
@@ -188,9 +188,7 @@ public class GeneratorModelPanel extends JPanel {
 
         GridBagConstraints generateButtonConstraints = initGenerateButtonConstraints(10);
 
-        vaeGenerateButton = new JButton();
-        vaeGenerateButton.setAction(new GenerateWithVaeButtonAction(this));
-        vaeGenerateButton.setText(GENERATE_BUTTON_TEXT);
+        vaeGenerateButton = WindowUtils.createButton(GENERATE_BUTTON_TEXT, new GenerateWithVaeButtonAction(this));
         add(vaeGenerateButton, generateButtonConstraints);
     }
 
@@ -200,8 +198,8 @@ public class GeneratorModelPanel extends JPanel {
                 1,
                 gridy,
                 GridBagConstraints.LAST_LINE_END);
-        generateButtonConstraints.ipadx = 15;
-        generateButtonConstraints.ipady = 10;
+        generateButtonConstraints.ipadx = 5;
+        generateButtonConstraints.ipady = 5;
         generateButtonConstraints.insets = new Insets(5, 0, 10, 5);
 
         return generateButtonConstraints;

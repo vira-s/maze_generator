@@ -70,7 +70,7 @@ public class TrainingDataPanel extends JPanel {
                 0,
                 GridBagConstraints.HORIZONTAL,
                 GridBagConstraints.NORTH);
-        radioButtonConstraints.insets = new Insets(0, 0, 5, 0);
+        radioButtonConstraints.insets = new Insets(5, 0, 5, 0);
 
         initLoadButton();
         initGenerateButton();
@@ -126,7 +126,7 @@ public class TrainingDataPanel extends JPanel {
                 1,
                 GridBagConstraints.HORIZONTAL,
                 GridBagConstraints.CENTER);
-        fileFieldConstraints.insets = new Insets(0, 0, 5, 0);
+        fileFieldConstraints.insets = new Insets(5, 0, 5, 0);
 
         add(fileLoaderPanel, fileFieldConstraints);
     }
@@ -145,7 +145,7 @@ public class TrainingDataPanel extends JPanel {
                 3,
                 GridBagConstraints.HORIZONTAL,
                 GridBagConstraints.SOUTH);
-        generationFieldsConstraints.insets = new Insets(0, 0, 5, 0);
+        generationFieldsConstraints.insets = new Insets(5, 0, 5, 0);
 
         add(generationFieldPanel, generationFieldsConstraints);
 

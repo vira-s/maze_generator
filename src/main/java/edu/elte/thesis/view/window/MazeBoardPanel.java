@@ -27,7 +27,7 @@ public class MazeBoardPanel extends JPanel {
 
     private static final double X_OFFSET = 45.0;
 
-    private static final double Y_OFFSET = 20.0;
+    private static final double Y_OFFSET = 40.0;
 
     private Maze maze;
 

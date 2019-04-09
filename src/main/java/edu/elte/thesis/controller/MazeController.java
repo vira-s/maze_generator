@@ -1,16 +1,17 @@
 package edu.elte.thesis.controller;
 
+import edu.elte.thesis.graph.utils.BinarizedMaze;
 import edu.elte.thesis.model.Maze;
 import edu.elte.thesis.utils.MazeGeneratorAlgorithm;
 import edu.elte.thesis.utils.MazeGeneratorRunner;
-import edu.elte.thesis.utils.VaeRunner;
+import edu.elte.thesis.utils.python.PythonRunner;
 import edu.elte.thesis.view.window.MazeBoardPanel;
 import edu.elte.thesis.view.window.MazeInfoPanel;
 import edu.elte.thesis.view.window.MazeWindow;
-import edu.elte.thesis.view.window.menu.WindowMenuBar;
 import edu.elte.thesis.view.window.preferences.MazePreferenceTabbedPane;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.filefilter.PrefixFileFilter;
+import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
@@ -19,12 +20,15 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -87,6 +91,17 @@ public class MazeController {
     private static final String VAE_STATISTICS_FILENAME = "vae_statistics.txt";
     private static final String VAE_STATISTICS_FILE_WITH_PATH = GENERATION_FOLDER + VAE_FOLDER + VAE_STATISTICS_FILENAME;
 
+    private static final String DIMENSION = "--dimension";
+
+    private static final String MODEL_FILE = "--model_file";
+
+    private static final String LOAD_MODEL = "--load_model";
+
+    private static final String GENERATE_ONLY = "--generate_only";
+
+    private static final String TRAINING_DATA = "--training_data";
+
+    private static final String EPOCHS = "--epochs";
 
     private MazeWindow parentWindow;
 
@@ -144,10 +159,13 @@ public class MazeController {
         Optional<String> modelFile = retrieveModelFilePath(defaultModel, mazeSize);
         if (modelFile.isPresent()) {
             try {
-                maze = VaeRunner.generateOnly(mazeSize,
-                        modelFile.get(),
-                        VAE_GENERATED_FILE_LOCATION
-                                .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize));
+                Map<String, String> arguments = new HashMap<>();
+                arguments.put(GENERATE_ONLY, String.valueOf(true));
+                arguments.put(LOAD_MODEL, String.valueOf(true));
+                arguments.put(DIMENSION, String.valueOf(mazeSize));
+                arguments.put(MODEL_FILE, modelFile.get());
+
+                maze = runCommand(arguments, mazeSize);
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -204,15 +222,6 @@ public class MazeController {
                                  int mazeSize,
                                  File trainingData,
                                  int epochs) {
-        /*
-        boolean loadModel,
-        int mazeSize,
-
-        int epochs,
-        String modelFilename,
-        String trainingDataFilename,
-        String generatedMazeFileWithPath
-         */
         Optional<String> modelFile;
         if (loadModel) {
             modelFile = retrieveModelFilePath(defaultModel, mazeSize);
@@ -223,12 +232,17 @@ public class MazeController {
         Optional<Maze> maze = Optional.empty();
         if (modelFile.isPresent()) {
             try {
-                maze = VaeRunner.trainModel(loadModel,
-                        mazeSize,
-                        epochs,
-                        modelFile.get(),
-                        trainingData.getAbsolutePath(),
-                        VAE_GENERATED_FILE_LOCATION.replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize));
+                Map<String, String> arguments = new HashMap<>();
+                arguments.put(DIMENSION, String.valueOf(mazeSize));
+                arguments.put(EPOCHS, String.valueOf(epochs));
+                arguments.put(TRAINING_DATA, trainingData.getAbsolutePath());
+                arguments.put(MODEL_FILE, modelFile.get());
+                if (loadModel) {
+                    arguments.put(LOAD_MODEL, String.valueOf(true));
+                }
+
+                maze = runCommand(arguments, mazeSize);
+
             } catch (IOException exception) {
                 exception.printStackTrace();
             }
@@ -241,6 +255,41 @@ public class MazeController {
         } else {
             LOGGER.error("Couldn't find model file");
         }
+    }
+
+    private Optional<Maze> runCommand(Map<String, String> arguments,
+                                      int mazeSize) throws IOException {
+
+        PythonRunner pythonRunner = new PythonRunner(arguments);
+        int exitValue = pythonRunner.runCommand();
+        Optional<Maze> maze = Optional.empty();
+
+        if (exitValue == 0) {
+            maze = Optional.of(
+                    getGeneratedResult(VAE_GENERATED_FILE_LOCATION.replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize)));
+        }
+
+        return maze;
+    }
+
+    private Maze getGeneratedResult(String generatedMazeFileWithPath) throws IOException {
+        File generatedMazes = new File(generatedMazeFileWithPath);
+        ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(generatedMazes, Charset.forName("UTF-8"));
+        String line = reversedLinesFileReader.readLine();
+        LOGGER.info("{}", line);
+
+        // TODO investigate why the unmarshaller doesn't work
+        //  JsonObjectMarshaller jsonObjectMarshaller = new JsonObjectMarshaller(BinarizedMaze.class);
+        // TODO investigate why the unmarshaller doesn't work
+        //  BinarizedMaze binarizedMaze = (BinarizedMaze) jsonObjectMarshaller.unmarshal(line);
+
+        BinarizedMaze binarizedMaze = new BinarizedMaze(Arrays.asList(line.substring(line.indexOf("[") + 1, line.indexOf("]"))
+                .replace("\"", "")
+                .split(",")));
+
+        Maze maze = binarizedMaze.createGraphFromBinarizedMaze();
+        LOGGER.info(maze);
+        return maze;
     }
 
     private void updateMazeBoard(Maze maze, int mazeSize) {
@@ -316,7 +365,6 @@ public class MazeController {
         parentWindow.add(createInfoPanel(), BorderLayout.NORTH);
         parentWindow.add(createMazePreferenceTabbedPane(), BorderLayout.WEST);
         parentWindow.add(mazeBoard, BorderLayout.CENTER);
-        parentWindow.setJMenuBar(new WindowMenuBar(parentWindow));
     }
 
     private void setMazeInfo() {
