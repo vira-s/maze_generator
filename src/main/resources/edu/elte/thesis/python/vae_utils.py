@@ -58,7 +58,7 @@ def get_data_from_json(filename):
 
 
 def write_data_to_json(array, filename):
-    with open(filename, 'a') as f:
+    with open(filename, 'a', 1) as f:
         d = dict()
         d['rows'] = array
         f.write("{}\n".format(json.dumps(d, separators=(",", ":"))))
@@ -112,15 +112,14 @@ def generate_and_save_images(model, epoch, test_input, vae_generated_location, v
 
     for i in range(predictions.shape[0]):
         plt.subplot(1, 1, i+1)
-        plt.imshow(predictions[i, :, :, 0], cmap='gray')
-        plt.axis('off')
+        # TODO need image?
+        #  plt.imshow(predictions[i, :, :, 0], cmap='gray')
+        #  plt.axis('off')
         save_prediction_matrix_to_file(predictions[i, :, :, 0], vae_generated_location, vae_generated_filename)
-    # tight_layout minimizes the overlap between 2 sub-plots
-    plt.savefig(os.path.join(vae_generated_location, 'image_at_epoch_{:04d}.png'.format(epoch)))
 
-    
-def display_image(epoch_no, vae_generated_location):
-    return PIL.Image.open(os.path.join(vae_generated_location, 'image_at_epoch_{:04d}.png'.format(epoch_no)))
+    # tight_layout minimizes the overlap between 2 sub-plots
+    # TODO need image?
+    #  plt.savefig(os.path.join(vae_generated_location, 'image_at_epoch_{:04d}.png'.format(epoch)))
 
     
 def create_epochs_gif(path_to_images):
@@ -149,7 +148,7 @@ def train_model(epochs, train_dataset, test_dataset, model, optimizer, random_ve
                              vae_generated_location,
                              vae_generated_filename)
 
-    with open(statistics_file, "a") as f:
+    with open(statistics_file, "a", 1) as f:
         f.write(datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
         for epoch in range(1, epochs + 1):
             start_time = time.time()
@@ -164,7 +163,8 @@ def train_model(epochs, train_dataset, test_dataset, model, optimizer, random_ve
                 for test_x in test_dataset:
                     loss(compute_loss(model, test_x))
                 elbo = -loss.result()
-                display.clear_output(wait=False)
+                # TODO image?
+                #  display.clear_output(wait=False)
                 print('Epoch: {}, Test set ELBO: {}, '
                       'time elapse for current epoch {}'.format(epoch,
                                                                 elbo,

@@ -2,6 +2,7 @@ package edu.elte.thesis.utils.python;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.util.Assert;
 
 import java.io.BufferedReader;
@@ -34,6 +35,7 @@ public class PythonRunner {
 
         command = new ArrayList<>();
         command.add("python");
+        command.add("-u");
         command.add(MAZE_GENERATOR_SCRIPT);
 
         arguments.forEach((argument, value) -> {
@@ -59,12 +61,16 @@ public class PythonRunner {
 
             String line;
             while ((line = inputStreamReader.readLine()) != null) {
-                LOGGER.info("{}", line);
+                if (!Strings.isBlank(line)) {
+                    LOGGER.info("{}", line);
+                }
             }
             inputStreamReader.close();
 
             while ((line = errorStreamReader.readLine()) != null) {
-                LOGGER.error("{}", line);
+                if (!Strings.isBlank(line)) {
+                    LOGGER.error("{}", line);
+                }
             }
             errorStreamReader.close();
 

@@ -14,6 +14,7 @@ import org.apache.commons.io.filefilter.PrefixFileFilter;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.util.Assert;
 
 import java.awt.BorderLayout;
@@ -248,7 +249,8 @@ public class MazeController {
             }
 
             if (maze.isPresent()) {
-                updateMazeBoard(maze.get(), mazeSize);
+                updateMazeBoard(maze.get(), mazeSize,
+                        modelFile.get().substring(modelFile.get().indexOf(VAE_FOLDER)));
             } else {
                 LOGGER.error("Couldn't generate maze");
             }
@@ -293,11 +295,21 @@ public class MazeController {
     }
 
     private void updateMazeBoard(Maze maze, int mazeSize) {
-        createMazeBoard(maze);
-        setMazeInfo(VAE_FOLDER + "\\" + CURRENT_DATE + "\\"
-                        + VAE_GENERATED_FILENAME.replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize),
-                VAE_FOLDER + VAE_STATISTICS_FILENAME);
+        updateMazeBoard(maze, mazeSize, null);
+    }
 
+    private void updateMazeBoard(Maze maze, int mazeSize, String vaeGeneratedFile) {
+        createMazeBoard(maze);
+        if (Strings.isBlank(vaeGeneratedFile)) {
+            setMazeInfo(VAE_FOLDER + CURRENT_DATE + "\\"
+                            + VAE_GENERATED_FILENAME.replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize),
+                    VAE_FOLDER + VAE_STATISTICS_FILENAME);
+        } else {
+            setMazeInfo(VAE_FOLDER + CURRENT_DATE + "\\"
+                            + VAE_GENERATED_FILENAME.replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize),
+                    VAE_FOLDER + VAE_STATISTICS_FILENAME,
+                    vaeGeneratedFile);
+        }
         mazeBoard.setVisible(true);
         infoPanel.setVisible(true);
     }

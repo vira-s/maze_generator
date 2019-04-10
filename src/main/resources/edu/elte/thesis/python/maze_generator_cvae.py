@@ -88,7 +88,8 @@ else:
                       vae_statistics_file, 
                       vae_generated_location,
                       vae_generated_filename)
-    utils.create_epochs_gif(vae_generated_location)
+    # TODO need image?
+    #  utils.create_epochs_gif(vae_generated_location)
 
     if not arguments.generate_only:
         utils.save_model_weights(model, vae_model_file)

@@ -94,7 +94,13 @@ public class SubmitButtonAction extends AbstractAction {
                 LOGGER.info("Training Data: {}", trainingDataAbsolutePath);
 
                 trainingDataAbsolutePath = trainingDataAbsolutePath.substring(0, trainingDataAbsolutePath.lastIndexOf("."));
-                mazeSize = Integer.parseInt(trainingDataAbsolutePath.substring(trainingDataAbsolutePath.lastIndexOf("x") + 1));
+                String sizeText = trainingDataAbsolutePath.substring(trainingDataAbsolutePath.lastIndexOf("x") + 1);
+                try {
+                    mazeSize = Integer.parseInt(sizeText);
+                } catch (NumberFormatException exception) {
+                    sizeText = sizeText.substring(0, sizeText.lastIndexOf("_"));
+                }
+                mazeSize = Integer.parseInt(sizeText);
 
                 return true;
             } else {
