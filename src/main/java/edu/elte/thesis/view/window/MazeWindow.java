@@ -52,7 +52,7 @@ public class MazeWindow extends JFrame {
 
     private void setWindowActionPreferences() {
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new MainWindowListener());
+        addWindowListener(new MainWindowListener(mazeController));
     }
 
     private void setDimensions() {

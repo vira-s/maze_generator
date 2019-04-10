@@ -165,11 +165,10 @@ def train_model(epochs, train_dataset, test_dataset, model, optimizer, random_ve
                 elbo = -loss.result()
                 # TODO image?
                 #  display.clear_output(wait=False)
-                print('Epoch: {}, Test set ELBO: {}, '
-                      'time elapse for current epoch {}'.format(epoch,
+                print('Epoch: {}, ELBO: {}, elapsed time for current epoch {}'.format(epoch,
                                                                 elbo,
                                                                 end_time - start_time))
-                f.write("Epoch: {}, Test set ELBO: {}, time elapse for current epoch {}\n".format(epoch,
+                f.write("Epoch: {}, Test set ELBO: {}, elapsed time for current epoch {}\n".format(epoch,
                                                                                                   elbo,
                                                                                                   end_time - start_time))
                 generate_and_save_images(model, epoch, random_vector_for_generation, vae_generated_location, vae_generated_filename)

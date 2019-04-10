@@ -1,25 +1,27 @@
 package edu.elte.thesis.utils.python;
 
+import edu.elte.thesis.controller.MazeController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.util.Assert;
 
+import javax.swing.SwingWorker;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Utility class to execute python scripts.
  *
  * @author Viktoria Sinkovics
  */
-public class PythonRunner {
+public class PythonRunner extends SwingWorker<Integer, String> {
 
     private static final Logger LOGGER = LogManager.getLogger(PythonRunner.class);
 
@@ -27,11 +29,20 @@ public class PythonRunner {
 
     private static final String MAZE_GENERATOR_SCRIPT = ABSOLUTE_PATH + "\\src\\main\\resources\\edu\\elte\\thesis\\python\\maze_generator_cvae.py";
 
+    private MazeController controller;
+
     private ArrayList<String> command;
 
-    public PythonRunner(Map<String, String> arguments) {
+    private int status = -2;
 
+    private int currentEpoch = 0;
+
+    private Process process;
+
+    public PythonRunner(Map<String, String> arguments, MazeController controller) {
         Assert.notEmpty(arguments, "arguments should not be empty.");
+        Assert.notNull(controller, "controller should not be null.");
+        this.controller = controller;
 
         command = new ArrayList<>();
         command.add("python");
@@ -46,39 +57,36 @@ public class PythonRunner {
                 command.add(value);
             }
         });
+
+        LOGGER.info("Created python command: {}", command);
     }
 
-    public int runCommand() {
-        ProcessBuilder processBuilder = new ProcessBuilder(command);
-        processBuilder.redirectErrorStream(false);
-        Process process = null;
-        int exitValue = -2;
+    @Override
+    protected Integer doInBackground() {
+        LOGGER.info("Starting process..");
         try {
+            ProcessBuilder processBuilder = new ProcessBuilder(command);
+            processBuilder.redirectErrorStream(true);
             process = processBuilder.start();
 
             BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-            BufferedReader errorStreamReader = new BufferedReader(new InputStreamReader(process.getErrorStream()));
 
             String line;
-            while ((line = inputStreamReader.readLine()) != null) {
+            while ((line = inputStreamReader.readLine()) != null  && !isCancelled()) {
                 if (!Strings.isBlank(line)) {
-                    LOGGER.info("{}", line);
+                    publish(line);
+                    LOGGER.info("publishing line: {}", line);
                 }
             }
-            inputStreamReader.close();
 
-            while ((line = errorStreamReader.readLine()) != null) {
-                if (!Strings.isBlank(line)) {
-                    LOGGER.error("{}", line);
-                }
+            if (!isCancelled()) {
+                status = process.waitFor();
+                LOGGER.info("Process exited with status: {}", status);
             }
-            errorStreamReader.close();
 
-            // TODO maybe more if there are more epochs/bigger mazes
-            process.waitFor(60, TimeUnit.MINUTES);
-            exitValue = process.exitValue();
-
-            LOGGER.info("Script exited with value [{}]", exitValue);
+            process.getInputStream().close();
+            process.getOutputStream().close();
+            process.getErrorStream().close();
 
         } catch (Exception exception) {
             LOGGER.error("An exception was thrown while executing the script.\n{}",
@@ -90,6 +98,32 @@ public class PythonRunner {
             }
         }
 
-        return exitValue;
+        return status;
+    }
+
+    @Override
+    protected void process(List<String> chunks) {
+        for (String line : chunks) {
+            LOGGER.info(line);
+            if (line.startsWith("Epoch") && !line.startsWith("Epoch: 0")) {
+                currentEpoch += 1;
+                status = 5;
+            }
+
+            this.controller.updateProgress(line, currentEpoch);
+        }
+    }
+
+    @Override
+    public void done() {
+        if (status == 0 || status == 5) {
+            LOGGER.info("Process finished with status: {}. Updating maze board...", status);
+            controller.handleUpdateMazeBoard(
+                    Integer.parseInt(command.get(command.indexOf("--dimension") + 1)),
+                    command.get(command.indexOf("--model_file") + 1),
+                    command.contains("--generate_only") || status == 5);
+        } else {
+            LOGGER.error("Couldn't generate maze");
+        }
     }
 }

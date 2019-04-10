@@ -90,8 +90,6 @@ public class MazeController {
     private static final String STATISTICS_FILE_LOCATION = GENERATION_FOLDER + STATISTICS_FOLDR + STATISTICS_FILENAME;
 
     private static final String VAE_STATISTICS_FILENAME = "vae_statistics.txt";
-    private static final String VAE_STATISTICS_FILE_WITH_PATH = GENERATION_FOLDER + VAE_FOLDER + VAE_STATISTICS_FILENAME;
-
     private static final String DIMENSION = "--dimension";
 
     private static final String MODEL_FILE = "--model_file";
@@ -111,6 +109,8 @@ public class MazeController {
     private MazeBoardPanel mazeBoard;
 
     private MazePreferenceTabbedPane mazePreferenceTabbedPane;
+
+    private PythonRunner pythonRunner;
 
     public MazeController(MazeWindow parentWindow) {
         this.parentWindow = parentWindow;
@@ -138,6 +138,7 @@ public class MazeController {
     }
 
     public void handleGenerateExample(int mazeSize, MazeGeneratorAlgorithm algorithm) {
+
         Maze maze = MazeGeneratorRunner.generate(
                 algorithm,
                 mazeSize,
@@ -155,27 +156,15 @@ public class MazeController {
     }
 
     public void handleGenerateExample(int mazeSize, boolean defaultModel) {
-        Optional<Maze> maze = Optional.empty();
-
         Optional<String> modelFile = retrieveModelFilePath(defaultModel, mazeSize);
         if (modelFile.isPresent()) {
-            try {
-                Map<String, String> arguments = new HashMap<>();
-                arguments.put(GENERATE_ONLY, String.valueOf(true));
-                arguments.put(LOAD_MODEL, String.valueOf(true));
-                arguments.put(DIMENSION, String.valueOf(mazeSize));
-                arguments.put(MODEL_FILE, modelFile.get());
+            Map<String, String> arguments = new HashMap<>();
+            arguments.put(GENERATE_ONLY, String.valueOf(true));
+            arguments.put(LOAD_MODEL, String.valueOf(true));
+            arguments.put(DIMENSION, String.valueOf(mazeSize));
+            arguments.put(MODEL_FILE, modelFile.get());
 
-                maze = runCommand(arguments, mazeSize);
-            } catch (IOException exception) {
-                exception.printStackTrace();
-            }
-
-            if (maze.isPresent()) {
-                updateMazeBoard(maze.get(), mazeSize);
-            } else {
-                LOGGER.error("Couldn't generate maze");
-            }
+            runCommand(arguments);
         } else {
             LOGGER.error("Couldn't find model file");
         }
@@ -230,48 +219,75 @@ public class MazeController {
             modelFile = Optional.of(NEW_VAE_MODEL_FILE_LOCATION.replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize));
         }
 
-        Optional<Maze> maze = Optional.empty();
         if (modelFile.isPresent()) {
-            try {
-                Map<String, String> arguments = new HashMap<>();
-                arguments.put(DIMENSION, String.valueOf(mazeSize));
-                arguments.put(EPOCHS, String.valueOf(epochs));
-                arguments.put(TRAINING_DATA, trainingData.getAbsolutePath());
-                arguments.put(MODEL_FILE, modelFile.get());
-                if (loadModel) {
-                    arguments.put(LOAD_MODEL, String.valueOf(true));
-                }
-
-                maze = runCommand(arguments, mazeSize);
-
-            } catch (IOException exception) {
-                exception.printStackTrace();
+            Map<String, String> arguments = new HashMap<>();
+            arguments.put(DIMENSION, String.valueOf(mazeSize));
+            arguments.put(EPOCHS, String.valueOf(epochs));
+            arguments.put(TRAINING_DATA, trainingData.getAbsolutePath());
+            arguments.put(MODEL_FILE, modelFile.get());
+            if (loadModel) {
+                arguments.put(LOAD_MODEL, String.valueOf(true));
             }
 
-            if (maze.isPresent()) {
-                updateMazeBoard(maze.get(), mazeSize,
-                        modelFile.get().substring(modelFile.get().indexOf(VAE_FOLDER)));
-            } else {
-                LOGGER.error("Couldn't generate maze");
-            }
+            runCommand(arguments);
+
         } else {
             LOGGER.error("Couldn't find model file");
         }
     }
 
-    private Optional<Maze> runCommand(Map<String, String> arguments,
-                                      int mazeSize) throws IOException {
+    private void runCommand(Map<String, String> arguments) {
+        pythonRunner = new PythonRunner(arguments, this);
+        pythonRunner.execute();
+    }
 
-        PythonRunner pythonRunner = new PythonRunner(arguments);
-        int exitValue = pythonRunner.runCommand();
-        Optional<Maze> maze = Optional.empty();
-
-        if (exitValue == 0) {
-            maze = Optional.of(
-                    getGeneratedResult(VAE_GENERATED_FILE_LOCATION.replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize)));
+    public void cancelProcess() {
+        if (Objects.nonNull(pythonRunner)
+                && !pythonRunner.isDone()) {
+            LOGGER.info("Cancelling process..");
+            pythonRunner.cancel(true);
+            pythonRunner.done();
         }
+    }
 
-        return maze;
+    public void handleUpdateMazeBoard(int mazeSize, String modelFile, boolean generateOnly) {
+        try {
+            Maze maze = getGeneratedResult(VAE_GENERATED_FILE_LOCATION
+                    .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize));
+
+            if (generateOnly) {
+                updateMazeBoard(maze, mazeSize);
+
+            } else {
+                updateMazeBoard(maze, mazeSize,
+                        modelFile.substring(modelFile.indexOf(VAE_FOLDER)));
+            }
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void updateProgress(String line, int currentEpoch) {
+        if (line.startsWith("Epoch: ")) {
+            int totalEpochs = (Integer) mazePreferenceTabbedPane.getModelTrainerAndMazeGenerationPanel()
+                    .getGeneratorModelHandlerPanel()
+                    .getEpochSpinner()
+                    .getValue();
+
+            if (currentEpoch == 1) {
+                double firstRunTime = Double.parseDouble(line.substring(line.lastIndexOf(" ")).trim());
+                LOGGER.info("Estimated time: " + (firstRunTime * totalEpochs) / 60 + 1 + " minutes");
+            } else if (currentEpoch != 0) {
+                String newText = " "
+                        + currentEpoch
+                        + "/"
+                        + totalEpochs
+                        + " epochs finished.";
+                LOGGER.info(newText);
+                // TODO NPE from progressDialog
+                //  progressDialog.getStatusLabel().setText(progressDialog.getStatusLabel().getText() + newText);
+            }
+        }
     }
 
     private Maze getGeneratedResult(String generatedMazeFileWithPath) throws IOException {
@@ -368,6 +384,10 @@ public class MazeController {
 
     public MazeWindow getParentWindow() {
         return parentWindow;
+    }
+
+    public PythonRunner getPythonRunner() {
+        return pythonRunner;
     }
 
     private void initWindowElements() {

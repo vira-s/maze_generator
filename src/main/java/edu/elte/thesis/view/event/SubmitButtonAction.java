@@ -52,7 +52,6 @@ public class SubmitButtonAction extends AbstractAction {
         ModelHandlerPanel modelHandlerPanel = parent.getGeneratorModelHandlerPanel();
 
         boolean validationOk;
-        boolean canIRunIt = false;
 
         if (trainingDataPanel.getGenerateMazeRadioButton()
                 .isSelected()) {
