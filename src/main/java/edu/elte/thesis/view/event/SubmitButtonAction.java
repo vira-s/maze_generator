@@ -101,6 +101,7 @@ public class SubmitButtonAction extends AbstractAction {
                 }
                 mazeSize = Integer.parseInt(sizeText);
 
+                trainingDataFileField.setBorder(MazeGenerationArgumentValidator.VALIDATION_PASSED_BORDER);
                 return true;
             } else {
                 errorMessages.add("The provided training data file was not found or it was empty.");

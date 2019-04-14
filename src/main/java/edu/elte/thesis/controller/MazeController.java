@@ -256,20 +256,28 @@ public class MazeController {
         }
     }
 
-    public void handleUpdateMazeBoard(int mazeSize, String modelFile, boolean generateOnly) {
-        infoPanel.stopProgress();
-
+    public void handleUpdateMazeBoardAndMazeInfo(int mazeSize, String modelFile, boolean generateOnly) {
         try {
             Maze maze = getGeneratedResult(VAE_GENERATED_FILE_LOCATION
                     .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize));
 
             if (generateOnly) {
-                updateMazeBoard(maze, mazeSize);
+                updateMazeBoardAndInfoPanel(maze, mazeSize);
 
             } else {
-                updateMazeBoard(maze, mazeSize,
+                updateMazeBoardAndInfoPanel(maze, mazeSize,
                         modelFile.substring(modelFile.indexOf(VAE_FOLDER)));
             }
+        } catch (IOException exception) {
+            exception.printStackTrace();
+        }
+    }
+
+    public void handleUpdateMazeBoard(int mazeSize) {
+        try {
+            Maze maze = getGeneratedResult(VAE_GENERATED_FILE_LOCATION
+                    .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize));
+            updateMazeBoard(maze);
         } catch (IOException exception) {
             exception.printStackTrace();
         }
@@ -320,11 +328,17 @@ public class MazeController {
         return maze;
     }
 
-    private void updateMazeBoard(Maze maze, int mazeSize) {
-        updateMazeBoard(maze, mazeSize, null);
+    private void updateMazeBoard(Maze maze) {
+        createMazeBoard(maze);
+        mazeBoard.setVisible(true);
+        infoPanel.setVisible(true);
     }
 
-    private void updateMazeBoard(Maze maze, int mazeSize, String vaeGeneratedFile) {
+    private void updateMazeBoardAndInfoPanel(Maze maze, int mazeSize) {
+        updateMazeBoardAndInfoPanel(maze, mazeSize, null);
+    }
+
+    private void updateMazeBoardAndInfoPanel(Maze maze, int mazeSize, String vaeGeneratedFile) {
         createMazeBoard(maze);
         if (Strings.isBlank(vaeGeneratedFile)) {
             setMazeInfo(VAE_FOLDER + CURRENT_DATE + "\\"

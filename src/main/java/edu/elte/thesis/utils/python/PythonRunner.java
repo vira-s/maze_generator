@@ -110,6 +110,7 @@ public class PythonRunner extends SwingWorker<Integer, String> {
             }
 
             this.controller.updateProgress(line, currentEpoch);
+            this.controller.handleUpdateMazeBoard(Integer.parseInt(command.get(command.indexOf("--dimension") + 1)));
         }
     }
 
@@ -117,7 +118,10 @@ public class PythonRunner extends SwingWorker<Integer, String> {
     public void done() {
         if (status == 0 || status == 5) {
             LOGGER.info("Process finished with status: {}. Updating maze board...", status);
-            controller.handleUpdateMazeBoard(
+
+            controller.getInfoPanel().stopProgress();
+
+            controller.handleUpdateMazeBoardAndMazeInfo(
                     Integer.parseInt(command.get(command.indexOf("--dimension") + 1)),
                     command.get(command.indexOf("--model_file") + 1),
                     command.contains("--generate_only") || status == 5);
