@@ -70,7 +70,6 @@ public class PythonRunner extends SwingWorker<Integer, String> {
             process = processBuilder.start();
 
             BufferedReader inputStreamReader = new BufferedReader(new InputStreamReader(process.getInputStream()));
-
             String line;
             while ((line = inputStreamReader.readLine()) != null  && !isCancelled()) {
                 if (!Strings.isBlank(line)) {

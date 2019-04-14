@@ -60,7 +60,6 @@ if arguments.generate_only:
                              vae_generated_location,
                                    vae_generated_filename)
 else:
-    # ----TODO---- check if arguments.training_data is an existing file OR if it is at the default location
     data_location = os.path.join(training_data_location, arguments.training_data)
     train_input = utils.get_data_from_json(data_location)
     test_input = train_input
@@ -88,8 +87,7 @@ else:
                       vae_statistics_file, 
                       vae_generated_location,
                       vae_generated_filename)
-    # TODO need image?
-    #  utils.create_epochs_gif(vae_generated_location)
+    utils.create_epochs_gif(vae_generated_location)
 
     if not arguments.generate_only:
         utils.save_model_weights(model, vae_model_file)

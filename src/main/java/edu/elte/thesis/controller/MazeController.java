@@ -17,6 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.util.Assert;
 
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.io.File;
 import java.io.FileFilter;
@@ -55,6 +56,8 @@ public class MazeController {
 
     private static final String MAZE_FOLDER = "training_data\\";
 
+    private static final String GENERATED_FOLDER = "generated\\";
+
     private static final String STATISTICS_FOLDR = "statistics\\";
 
     private static final String VAE_FOLDER = "vae\\";
@@ -68,8 +71,8 @@ public class MazeController {
 
 
     // Generate Single Maze
-    private static final String DEFAULT_GENERATE_SINGLE_MAZE_FILENAME = "generated_algorithm_mazes" + SIZE_PLACEHOLDER + ".txt";
-    private static final String DEFAULT_GENERATE_SINGLE_MAZE_FILE_LOCATION = GENERATION_FOLDER + DEFAULT_GENERATE_SINGLE_MAZE_FILENAME;
+    private static final String DEFAULT_GENERATE_SINGLE_MAZE_FILENAME = "generated_algorithm_mazes_" + SIZE_PLACEHOLDER + ".txt";
+    private static final String DEFAULT_GENERATE_SINGLE_MAZE_FILE_LOCATION = GENERATION_FOLDER + GENERATED_FOLDER + DEFAULT_GENERATE_SINGLE_MAZE_FILENAME;
 
 
     // VAE Model
@@ -112,6 +115,8 @@ public class MazeController {
 
     private PythonRunner pythonRunner;
 
+    private JPanel progressPanel;
+
     public MazeController(MazeWindow parentWindow) {
         this.parentWindow = parentWindow;
 
@@ -138,7 +143,6 @@ public class MazeController {
     }
 
     public void handleGenerateExample(int mazeSize, MazeGeneratorAlgorithm algorithm) {
-
         Maze maze = MazeGeneratorRunner.generate(
                 algorithm,
                 mazeSize,
@@ -147,7 +151,7 @@ public class MazeController {
                 new File(STATISTICS_FILE_LOCATION));
 
         createMazeBoard(maze);
-        setMazeInfo(MAZE_FOLDER + DEFAULT_GENERATE_SINGLE_MAZE_FILENAME
+        setMazeInfo(GENERATED_FOLDER + DEFAULT_GENERATE_SINGLE_MAZE_FILENAME
                         .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize),
                 STATISTICS_FOLDR + STATISTICS_FILENAME);
 
@@ -237,8 +241,10 @@ public class MazeController {
     }
 
     private void runCommand(Map<String, String> arguments) {
+        infoPanel.setProgressLabel("Running VAE...");
         pythonRunner = new PythonRunner(arguments, this);
         pythonRunner.execute();
+
     }
 
     public void cancelProcess() {
@@ -251,6 +257,8 @@ public class MazeController {
     }
 
     public void handleUpdateMazeBoard(int mazeSize, String modelFile, boolean generateOnly) {
+        infoPanel.stopProgress();
+
         try {
             Maze maze = getGeneratedResult(VAE_GENERATED_FILE_LOCATION
                     .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize));
@@ -276,7 +284,10 @@ public class MazeController {
 
             if (currentEpoch == 1) {
                 double firstRunTime = Double.parseDouble(line.substring(line.lastIndexOf(" ")).trim());
-                LOGGER.info("Estimated time: " + (firstRunTime * totalEpochs) / 60 + 1 + " minutes");
+                double estimatedTime = (firstRunTime * totalEpochs) / 60 + 1;
+                String text = "Estimated time: " + (firstRunTime * totalEpochs) / 60 + 1 + " minutes";
+                LOGGER.info(text);
+                infoPanel.setProgress(estimatedTime, currentEpoch, totalEpochs);
             } else if (currentEpoch != 0) {
                 String newText = " "
                         + currentEpoch
@@ -284,8 +295,7 @@ public class MazeController {
                         + totalEpochs
                         + " epochs finished.";
                 LOGGER.info(newText);
-                // TODO NPE from progressDialog
-                //  progressDialog.getStatusLabel().setText(progressDialog.getStatusLabel().getText() + newText);
+                infoPanel.setProgress(currentEpoch, totalEpochs);
             }
         }
     }
@@ -406,6 +416,10 @@ public class MazeController {
     }
 
     private void setMazeInfo(String mazeFile, String statisticsFile) {
+        Arrays.stream(infoPanel.getComponents())
+                .filter(component -> component instanceof JPanel)
+                .forEach(progressPanel -> progressPanel.setVisible(false));
+
         setMazeInfo(mazeFile,
                 statisticsFile,
                 null);

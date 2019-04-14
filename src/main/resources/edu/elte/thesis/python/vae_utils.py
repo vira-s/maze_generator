@@ -112,16 +112,18 @@ def generate_and_save_images(model, epoch, test_input, vae_generated_location, v
 
     for i in range(predictions.shape[0]):
         plt.subplot(1, 1, i+1)
-        # TODO need image?
-        #  plt.imshow(predictions[i, :, :, 0], cmap='gray')
-        #  plt.axis('off')
+        plt.imshow(predictions[i, :, :, 0], cmap='gray')
+        plt.axis('off')
         save_prediction_matrix_to_file(predictions[i, :, :, 0], vae_generated_location, vae_generated_filename)
 
     # tight_layout minimizes the overlap between 2 sub-plots
-    # TODO need image?
-    #  plt.savefig(os.path.join(vae_generated_location, 'image_at_epoch_{:04d}.png'.format(epoch)))
+    plt.savefig(os.path.join(vae_generated_location, 'image_at_epoch_{:04d}.png'.format(epoch)))
 
-    
+
+def display_image(epoch_no, vae_generated_location):
+    return PIL.Image.open(os.path.join(vae_generated_location, 'image_at_epoch_{:04d}.png'.format(epoch_no)))
+
+
 def create_epochs_gif(path_to_images):
     gif_file = os.path.join(path_to_images, 'cvae.gif')
     with imageio.get_writer(gif_file, mode='I') as writer:
@@ -163,8 +165,7 @@ def train_model(epochs, train_dataset, test_dataset, model, optimizer, random_ve
                 for test_x in test_dataset:
                     loss(compute_loss(model, test_x))
                 elbo = -loss.result()
-                # TODO image?
-                #  display.clear_output(wait=False)
+                display.clear_output(wait=False)
                 print('Epoch: {}, ELBO: {}, elapsed time for current epoch {}'.format(epoch,
                                                                 elbo,
                                                                 end_time - start_time))
