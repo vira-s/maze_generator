@@ -25,6 +25,8 @@ public class PythonRunner extends SwingWorker<Integer, String> {
 
     private static final Logger LOGGER = LogManager.getLogger(PythonRunner.class);
 
+    private static final String CONDA_PYTHON = System.getProperty("user.home") + "\\Anaconda3\\envs\\maze_generator_tf\\python.exe";
+
     private static final String ABSOLUTE_PATH = new File("").getAbsolutePath();
 
     private static final String MAZE_GENERATOR_SCRIPT = ABSOLUTE_PATH + "\\src\\main\\resources\\edu\\elte\\thesis\\python\\maze_generator_cvae.py";
@@ -45,7 +47,7 @@ public class PythonRunner extends SwingWorker<Integer, String> {
         this.controller = controller;
 
         command = new ArrayList<>();
-        command.add("python");
+        command.add(CONDA_PYTHON);
         command.add("-u");
         command.add(MAZE_GENERATOR_SCRIPT);
 
@@ -74,13 +76,11 @@ public class PythonRunner extends SwingWorker<Integer, String> {
             while ((line = inputStreamReader.readLine()) != null  && !isCancelled()) {
                 if (!Strings.isBlank(line)) {
                     publish(line);
-                    LOGGER.info("publishing line: {}", line);
                 }
             }
 
             if (!isCancelled()) {
                 status = process.waitFor();
-                LOGGER.info("Process exited with status: {}", status);
             }
 
             process.getInputStream().close();
@@ -127,6 +127,7 @@ public class PythonRunner extends SwingWorker<Integer, String> {
                     command.contains("--generate_only") || status == 5);
         } else {
             LOGGER.error("Couldn't generate maze");
+            controller.getInfoPanel().stopProgress("Couldn't generate maze");
         }
     }
 }

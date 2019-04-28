@@ -16,7 +16,6 @@ from IPython import display
 from cvae import CVAE
 
 tfe = tf.contrib.eager
-tf.enable_eager_execution()
 
 
 def calculate_binary_maze_size(dimension):
@@ -35,6 +34,7 @@ def calculate_binary_maze_size(dimension):
 def save_model_weights(model, filename): 
     # serialize weights to HDF5
     model.save_weights(filename)
+    print("saved model to " + filename)
 
 
 def load_model_weights(latent_dim, dimension, filename):

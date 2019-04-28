@@ -17,7 +17,6 @@ public class MazeGenerationArgumentValidator {
 
     private static final Logger LOGGER = LogManager.getLogger(MazeGenerationArgumentValidator.class);
 
-
     public static final Color COLOR_PASSED = new Color(49, 130, 10);
 
     public static final Color COLOR_FAILED = new Color(122, 2, 23);

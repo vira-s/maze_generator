@@ -1,8 +1,6 @@
 from __future__ import absolute_import, division, print_function
 import tensorflow as tf
 
-tfe = tf.contrib.eager
-tf.enable_eager_execution()
 
 class CVAE(tf.keras.Model):
     def __init__(self, latent_dim, dimension):

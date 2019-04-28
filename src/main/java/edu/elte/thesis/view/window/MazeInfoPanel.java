@@ -155,23 +155,30 @@ public class MazeInfoPanel extends JPanel {
         progressPanel.setVisible(false);
     }
 
+    public void stopProgress(String reason) {
+        if(Arrays.asList(getComponents()).contains(progressPanel)) {
+            remove(progressPanel);
+        }
+
+        progressLabel.setVisible(false);
+        progressBar.setVisible(false);
+        progressPanel.setVisible(false);
+
+        label.setText(label.getText() + INFO_SEPARATOR + reason);
+        repaint();
+    }
+
     public void setProgress(double estimatedTime, int currentEpoch, int totalEpochs) {
         this.estimatedTime = (int) estimatedTime;
         progressLabel.setText("Estimated time: " + this.estimatedTime + " minutes, "
                 + currentEpoch + "/" + totalEpochs + " epochs finished");
 
-        progressBar.setIndeterminate(false);
-        progressBar.setMinimum(0);
-        progressBar.setMaximum(100);
-        progressBar.setStringPainted(true);
-        double progress = ((double) currentEpoch / totalEpochs) * 100;
-        progressBar.setValue((int) progress);
-        progressBar.setString(progress + "%");
-    }
-
-    public void setProgress(int currentEpoch, int totalEpochs) {
-        progressLabel.setText("Estimated time: " + this.estimatedTime + " minutes, "
-                + currentEpoch + "/" + totalEpochs + " epochs finished");
+        if (progressBar.isIndeterminate()) {
+            progressBar.setIndeterminate(false);
+            progressBar.setMinimum(0);
+            progressBar.setMaximum(100);
+            progressBar.setStringPainted(true);
+        }
 
         double progress = ((double) currentEpoch / totalEpochs) * 100;
         progressBar.setValue((int) progress);

@@ -62,7 +62,7 @@ public class GeneratorModelPanel extends JPanel {
 
         setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
         setLayout(new GridBagLayout());
-        setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
+        setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 35));
 
         initAlgorithmSelectorPanel();
         initVaePanel();

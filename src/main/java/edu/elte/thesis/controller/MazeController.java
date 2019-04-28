@@ -159,7 +159,7 @@ public class MazeController {
         infoPanel.setVisible(true);
     }
 
-    public void handleGenerateExample(int mazeSize, boolean defaultModel) {
+    public boolean handleGenerateExample(int mazeSize, boolean defaultModel) {
         Optional<String> modelFile = retrieveModelFilePath(defaultModel, mazeSize);
         if (modelFile.isPresent()) {
             Map<String, String> arguments = new HashMap<>();
@@ -169,9 +169,10 @@ public class MazeController {
             arguments.put(MODEL_FILE, modelFile.get());
 
             runCommand(arguments);
-        } else {
-            LOGGER.error("Couldn't find model file");
+            return true;
         }
+        LOGGER.error("Couldn't find model file");
+        return false;
     }
 
     public File handleGenerateTrainingData(int mazeSize,
@@ -211,11 +212,11 @@ public class MazeController {
         return Optional.empty();
     }
 
-    public void handleTrainModel(boolean loadModel,
-                                 boolean defaultModel,
-                                 int mazeSize,
-                                 File trainingData,
-                                 int epochs) {
+    public boolean handleTrainModel(boolean loadModel,
+                                    boolean defaultModel,
+                                    int mazeSize,
+                                    File trainingData,
+                                    int epochs) {
         Optional<String> modelFile;
         if (loadModel) {
             modelFile = retrieveModelFilePath(defaultModel, mazeSize);
@@ -234,9 +235,10 @@ public class MazeController {
             }
 
             runCommand(arguments);
-
+            return true;
         } else {
             LOGGER.error("Couldn't find model file");
+            return false;
         }
     }
 
@@ -244,7 +246,6 @@ public class MazeController {
         infoPanel.setProgressLabel("Running VAE...");
         pythonRunner = new PythonRunner(arguments, this);
         pythonRunner.execute();
-
     }
 
     public void cancelProcess() {
@@ -258,6 +259,8 @@ public class MazeController {
 
     public void handleUpdateMazeBoardAndMazeInfo(int mazeSize, String modelFile, boolean generateOnly) {
         try {
+            Thread.sleep(2000);
+
             Maze maze = getGeneratedResult(VAE_GENERATED_FILE_LOCATION
                     .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize));
 
@@ -268,17 +271,19 @@ public class MazeController {
                 updateMazeBoardAndInfoPanel(maze, mazeSize,
                         modelFile.substring(modelFile.indexOf(VAE_FOLDER)));
             }
-        } catch (IOException exception) {
+        } catch (IOException | InterruptedException exception) {
             exception.printStackTrace();
         }
     }
 
     public void handleUpdateMazeBoard(int mazeSize) {
         try {
+            Thread.sleep(2000);
+
             Maze maze = getGeneratedResult(VAE_GENERATED_FILE_LOCATION
                     .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize));
             updateMazeBoard(maze);
-        } catch (IOException exception) {
+        } catch (IOException | InterruptedException exception) {
             exception.printStackTrace();
         }
     }
@@ -290,10 +295,11 @@ public class MazeController {
                     .getEpochSpinner()
                     .getValue();
 
+            double runTime = Double.parseDouble(line.substring(line.lastIndexOf(" ")).trim());
+            double estimatedTime = (runTime * (totalEpochs - currentEpoch)) / 60 + 1;
+            String text = "Estimated time: " + (runTime * (totalEpochs - currentEpoch)) / 60 + 1 + " minutes";
+
             if (currentEpoch == 1) {
-                double firstRunTime = Double.parseDouble(line.substring(line.lastIndexOf(" ")).trim());
-                double estimatedTime = (firstRunTime * totalEpochs) / 60 + 1;
-                String text = "Estimated time: " + (firstRunTime * totalEpochs) / 60 + 1 + " minutes";
                 LOGGER.info(text);
                 infoPanel.setProgress(estimatedTime, currentEpoch, totalEpochs);
             } else if (currentEpoch != 0) {
@@ -302,8 +308,8 @@ public class MazeController {
                         + "/"
                         + totalEpochs
                         + " epochs finished.";
-                LOGGER.info(newText);
-                infoPanel.setProgress(currentEpoch, totalEpochs);
+                LOGGER.info(text + newText);
+                infoPanel.setProgress(estimatedTime, currentEpoch, totalEpochs);
             }
         }
     }
@@ -314,18 +320,11 @@ public class MazeController {
         String line = reversedLinesFileReader.readLine();
         LOGGER.info("{}", line);
 
-        // TODO investigate why the unmarshaller doesn't work
-        //  JsonObjectMarshaller jsonObjectMarshaller = new JsonObjectMarshaller(BinarizedMaze.class);
-        // TODO investigate why the unmarshaller doesn't work
-        //  BinarizedMaze binarizedMaze = (BinarizedMaze) jsonObjectMarshaller.unmarshal(line);
-
         BinarizedMaze binarizedMaze = new BinarizedMaze(Arrays.asList(line.substring(line.indexOf("[") + 1, line.indexOf("]"))
                 .replace("\"", "")
                 .split(",")));
 
-        Maze maze = binarizedMaze.createGraphFromBinarizedMaze();
-        LOGGER.info(maze);
-        return maze;
+        return binarizedMaze.createGraphFromBinarizedMaze();
     }
 
     private void updateMazeBoard(Maze maze) {
@@ -360,14 +359,16 @@ public class MazeController {
                 .substring(0, NEW_VAE_MODEL_FILE_LOCATION.lastIndexOf("_"))
                 .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize);
 
-        File defaultVaeModelFile = new File(DEFAULT_VAE_MODEL_FILE_LOCATION);
+        String defaultVaeFile = DEFAULT_VAE_MODEL_FILE_LOCATION
+                .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize);
 
+        File defaultVaeModelFile = new File(defaultVaeFile);
         if (defaultModel
                 && defaultVaeModelFile.exists()
                 && !defaultVaeModelFile.isDirectory()) {
-            LOGGER.info("Using default model: {}", DEFAULT_VAE_MODEL_FILE_LOCATION);
+            LOGGER.info("Using default model: {}", defaultVaeFile);
 
-            return Optional.of(DEFAULT_VAE_MODEL_FILE_LOCATION);
+            return Optional.of(defaultVaeFile);
 
         } else {
             String newVaeModelFileFolder = newVaeModelFilePrefixWithPath
@@ -390,6 +391,7 @@ public class MazeController {
                 return Optional.of(models.get(0).getAbsolutePath());
             }
         }
+
         LOGGER.info("Couldn't find any matching files.");
         return Optional.empty();
     }

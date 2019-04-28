@@ -65,7 +65,7 @@ public class SubmitButtonAction extends AbstractAction {
         }
 
         if (validationOk) {
-            parent.getController()
+            boolean modelFileFound = parent.getController()
                     .handleTrainModel(
                             modelHandlerPanel.getExistingModelButton().isSelected(),
                             modelHandlerPanel.getVaeDefaultModelCheckBox().isEnabled()
@@ -73,6 +73,18 @@ public class SubmitButtonAction extends AbstractAction {
                             mazeSize,
                             trainingData,
                             getEpochs(modelHandlerPanel.getEpochSpinner()));
+            if (!modelFileFound) {
+                modelHandlerPanel.getExistingModelButton()
+                        .setForeground(MazeGenerationArgumentValidator.COLOR_FAILED);
+
+                new ErrorDialog(null,
+                        "Please revise the below error(s): \n\t* "
+                                + "Couldn't find any model for the specified size (" + mazeSize + "x" + mazeSize + ")",
+                        "Invalid Maze Generation Arguments");
+            } else {
+                modelHandlerPanel.getExistingModelButton()
+                        .setForeground(Color.BLACK);
+            }
         }
     }
 

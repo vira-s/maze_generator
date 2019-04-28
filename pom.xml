@@ -22,6 +22,7 @@
         <jackson.version>2.9.8</jackson.version>
         <eclipselink.version>2.5.0</eclipselink.version>
         <jaxb.version>2.2.11</jaxb.version>
+        <exec.mainClass>edu.elte.thesis.MazeGeneratorApplication</exec.mainClass>
     </properties>
 
     <build>
