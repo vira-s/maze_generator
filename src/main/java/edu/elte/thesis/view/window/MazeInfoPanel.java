@@ -135,9 +135,8 @@ public class MazeInfoPanel extends JPanel {
     }
 
     public void startProgress() {
-        if(!Arrays.asList(getComponents()).contains(progressPanel)) {
-            add(progressPanel, BorderLayout.CENTER);
-        }
+        initProgressPanel();
+        add(progressPanel, BorderLayout.CENTER);
 
         progressLabel.setVisible(true);
         progressBar.setVisible(true);
@@ -153,6 +152,7 @@ public class MazeInfoPanel extends JPanel {
         progressLabel.setVisible(false);
         progressBar.setVisible(false);
         progressPanel.setVisible(false);
+        repaint();
     }
 
     public void stopProgress(String reason) {

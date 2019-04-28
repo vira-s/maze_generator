@@ -93,20 +93,20 @@ def apply_gradients(optimizer, gradients, variables, global_step=None):
     optimizer.apply_gradients(zip(gradients, variables), global_step=global_step)
 
     
-def save_prediction_matrix_to_file(prediction, vae_generated_location, vae_generated_filename):
+def save_prediction_matrix_to_file(prediction, vae_location, vae_generated_filename):
     binarized = np.where(prediction >= .5, 1, 0)
     flattened = []
     for sublist in binarized:
         val = ''.join(str(x) for x in sublist.tolist())
         flattened.append(val)
     
-    if not os.path.exists(vae_generated_location):
-        os.makedirs(vae_generated_location)
+    if not os.path.exists(vae_location):
+        os.makedirs(vae_location)
 
-    write_data_to_json(flattened, os.path.join(vae_generated_location, vae_generated_filename))
+    write_data_to_json(flattened, os.path.join(vae_location, vae_generated_filename))
 
 
-def generate_and_save_images(model, epoch, test_input, vae_generated_location, vae_generated_filename):
+def generate_and_save_images(model, epoch, test_input, vae_location, vae_generated_filename, maze_size):
     predictions = model.sample(test_input)
     fig = plt.figure(figsize=(1,1))
 
@@ -114,20 +114,20 @@ def generate_and_save_images(model, epoch, test_input, vae_generated_location, v
         plt.subplot(1, 1, i+1)
         plt.imshow(predictions[i, :, :, 0], cmap='gray')
         plt.axis('off')
-        save_prediction_matrix_to_file(predictions[i, :, :, 0], vae_generated_location, vae_generated_filename)
+        save_prediction_matrix_to_file(predictions[i, :, :, 0], vae_location, vae_generated_filename)
 
     # tight_layout minimizes the overlap between 2 sub-plots
-    plt.savefig(os.path.join(vae_generated_location, 'image_at_epoch_{:04d}.png'.format(epoch)))
+    plt.savefig(os.path.join(vae_location, '{:03d}_image_at_epoch_{:04d}.png'.format(maze_size, epoch)))
 
 
-def display_image(epoch_no, vae_generated_location):
-    return PIL.Image.open(os.path.join(vae_generated_location, 'image_at_epoch_{:04d}.png'.format(epoch_no)))
+def display_image(epoch_no, vae_location, maze_size):
+    return PIL.Image.open(os.path.join(vae_location, '{:03d}_image_at_epoch_{:04d}.png'.format(maze_size, epoch_no)))
 
 
-def create_epochs_gif(path_to_images):
-    gif_file = os.path.join(path_to_images, 'cvae.gif')
+def create_epochs_gif(path_to_images, maze_size):
+    gif_file = os.path.join(path_to_images, '{:03d}_cvae.gif'.format(maze_size))
     with imageio.get_writer(gif_file, mode='I') as writer:
-        filenames = glob.glob(os.path.join(path_to_images, 'image*.png'))
+        filenames = glob.glob(os.path.join(path_to_images, '{:03d}_image*.png'.format(maze_size)))
         filenames = sorted(filenames)
         last = -1
         for i,filename in enumerate(filenames):
@@ -143,12 +143,13 @@ def create_epochs_gif(path_to_images):
     
     
 def train_model(epochs, train_dataset, test_dataset, model, optimizer, random_vector_for_generation,
-                statistics_file, vae_generated_location, vae_generated_filename):
+                statistics_file, vae_location, vae_generated_filename, maze_size):
     generate_and_save_images(model, 
                              0, 
                              random_vector_for_generation, 
-                             vae_generated_location,
-                             vae_generated_filename)
+                             vae_location,
+                             vae_generated_filename,
+                             maze_size)
 
     with open(statistics_file, "a", 1) as f:
         f.write(datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S') + '\n')
@@ -172,5 +173,5 @@ def train_model(epochs, train_dataset, test_dataset, model, optimizer, random_ve
                 f.write("Epoch: {}, Test set ELBO: {}, elapsed time for current epoch {}\n".format(epoch,
                                                                                                   elbo,
                                                                                                   end_time - start_time))
-                generate_and_save_images(model, epoch, random_vector_for_generation, vae_generated_location, vae_generated_filename)
+                generate_and_save_images(model, epoch, random_vector_for_generation, vae_location, vae_generated_filename, maze_size)
 

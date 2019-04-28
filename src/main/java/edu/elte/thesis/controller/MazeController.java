@@ -60,7 +60,7 @@ public class MazeController {
 
     private static final String STATISTICS_FOLDR = "statistics\\";
 
-    private static final String VAE_FOLDER = "vae\\";
+    private static final String VAE_FOLDER = "cvae\\";
 
     // Training Data
     private static final String DEFAULT_TRAINING_DATA_FILENAME = "training_data_" + SIZE_PLACEHOLDER +".txt";
@@ -76,23 +76,23 @@ public class MazeController {
 
 
     // VAE Model
-    private static final String DEFAULT_VAE_MODEL_FILENAME = "vae_model_" + SIZE_PLACEHOLDER + ".h5";
+    private static final String DEFAULT_VAE_MODEL_FILENAME = "cvae_model_" + SIZE_PLACEHOLDER + ".h5";
     private static final String DEFAULT_VAE_MODEL_FILE_LOCATION = DEFAULT_FOLDER + VAE_FOLDER + DEFAULT_VAE_MODEL_FILENAME;
 
-    private static final String NEW_VAE_MODEL_FILENAME = "vae_model_" + SIZE_PLACEHOLDER + "_" + CURRENT_DATE + ".h5";
+    private static final String NEW_VAE_MODEL_FILENAME = "cvae_model_" + SIZE_PLACEHOLDER + "_" + CURRENT_DATE + ".h5";
     private static final String NEW_VAE_MODEL_FILE_LOCATION = GENERATION_FOLDER + VAE_FOLDER + NEW_VAE_MODEL_FILENAME;
 
 
     // Generated With VAE
-    private static final String VAE_GENERATED_FILENAME = "generated_vae_mazes_" + SIZE_PLACEHOLDER + ".txt";
-    private static final String VAE_GENERATED_FILE_LOCATION = GENERATION_FOLDER + VAE_FOLDER + "\\" + CURRENT_DATE + "\\" + VAE_GENERATED_FILENAME;
+    private static final String VAE_GENERATED_FILENAME = "generated_cvae_mazes_" + SIZE_PLACEHOLDER + ".txt";
+    private static final String VAE_GENERATED_FILE_LOCATION = GENERATION_FOLDER + VAE_FOLDER + "\\" + VAE_GENERATED_FILENAME;
 
 
     // Statistics
     private static final String STATISTICS_FILENAME = "algorithm_statistics.txt";
     private static final String STATISTICS_FILE_LOCATION = GENERATION_FOLDER + STATISTICS_FOLDR + STATISTICS_FILENAME;
 
-    private static final String VAE_STATISTICS_FILENAME = "vae_statistics.txt";
+    private static final String VAE_STATISTICS_FILENAME = "cvae_statistics.txt";
     private static final String DIMENSION = "--dimension";
 
     private static final String MODEL_FILE = "--model_file";
@@ -244,6 +244,8 @@ public class MazeController {
 
     private void runCommand(Map<String, String> arguments) {
         infoPanel.setProgressLabel("Running VAE...");
+        parentWindow.revalidate();
+        parentWindow.repaint();
         pythonRunner = new PythonRunner(arguments, this);
         pythonRunner.execute();
     }

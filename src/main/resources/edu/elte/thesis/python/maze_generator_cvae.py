@@ -33,11 +33,10 @@ arguments = parser.parse_args()
 base_dir = os.path.join(os.path.expanduser('~'), 'maze_generator')
 statistics_location = os.path.join(base_dir, 'statistics')
 training_data_location = os.path.join(base_dir, 'training_data')
-vae_location = os.path.join(base_dir, 'vae')
-vae_generated_location = os.path.join(vae_location, datetime.date.today().isoformat())
+vae_location = os.path.join(base_dir, 'cvae')
 
 dimension = utils.calculate_binary_maze_size(arguments.dimension)
-vae_generated_filename = "generated_vae_mazes_" + str(arguments.dimension) + "x" + str(arguments.dimension) + ".txt"
+vae_generated_filename = "generated_cvae_mazes_" + str(arguments.dimension) + "x" + str(arguments.dimension) + ".txt"
 
 latent_dim = 50
 num_examples_to_generate = 1
@@ -55,10 +54,11 @@ random_vector_for_generation = tf.random_normal(shape=[num_examples_to_generate,
 
 if arguments.generate_only:
     utils.generate_and_save_images(model, 
-                             0, 
-                             random_vector_for_generation, 
-                             vae_generated_location,
-                                   vae_generated_filename)
+                                   0,
+                                   random_vector_for_generation,
+                                   vae_location,
+                                   vae_generated_filename,
+                                   arguments.dimension)
 else:
     data_location = os.path.join(training_data_location, arguments.training_data)
     train_input = utils.get_data_from_json(data_location)
@@ -77,7 +77,7 @@ else:
 
     optimizer = tf.train.AdamOptimizer(learning_rate=1e-4)
 
-    vae_statistics_file = os.path.join(statistics_location, "vae_statistics.txt")
+    vae_statistics_file = os.path.join(statistics_location, "cvae_statistics.txt")
     utils.train_model(arguments.epochs, 
                       train_dataset, 
                       test_dataset, 
@@ -85,9 +85,10 @@ else:
                       optimizer, 
                       random_vector_for_generation, 
                       vae_statistics_file, 
-                      vae_generated_location,
-                      vae_generated_filename)
-    utils.create_epochs_gif(vae_generated_location)
+                      vae_location,
+                      vae_generated_filename,
+                      arguments.dimension)
+    utils.create_epochs_gif(vae_location, arguments.dimension)
 
     if not arguments.generate_only:
         utils.save_model_weights(model, vae_model_file)
