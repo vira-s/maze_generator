@@ -33,7 +33,7 @@ public class ModelHandlerPanel extends JPanel {
     public ModelHandlerPanel() {
         setLayout(new GridLayout(0, 1));
         setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
-        setBorder(WindowUtils.createTitledBorder("VAE Preferences"));
+        setBorder(WindowUtils.createTitledBorder("CVAE Preferences"));
 
         initRadioButtons();
         initEpochFields();

@@ -137,11 +137,11 @@ public class WindowUtils {
     }
 
     public static SpinnerModel getMazeCountSpinnerModel() {
-        return new SpinnerNumberModel(10000, 10000, 500000, 1000);
+        return new SpinnerNumberModel(10000, 10000, 100000, 1000);
     }
 
     public static SpinnerModel getEpochSpinnerModel() {
-        return new SpinnerNumberModel(20, 5, 1000, 1);
+        return new SpinnerNumberModel(20, 5, 250, 1);
     }
 
     public static void enablePanel(JPanel panel) {

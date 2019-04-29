@@ -87,7 +87,8 @@ else:
                       vae_statistics_file, 
                       vae_location,
                       vae_generated_filename,
-                      arguments.dimension)
+                      arguments.dimension,
+                      vae_model_file)
     utils.create_epochs_gif(vae_location, arguments.dimension)
 
     if not arguments.generate_only:

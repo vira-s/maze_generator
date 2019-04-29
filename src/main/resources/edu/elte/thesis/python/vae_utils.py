@@ -143,7 +143,7 @@ def create_epochs_gif(path_to_images, maze_size):
     
     
 def train_model(epochs, train_dataset, test_dataset, model, optimizer, random_vector_for_generation,
-                statistics_file, vae_location, vae_generated_filename, maze_size):
+                statistics_file, vae_location, vae_generated_filename, maze_size, vae_model_file):
     generate_and_save_images(model, 
                              0, 
                              random_vector_for_generation, 
@@ -174,4 +174,6 @@ def train_model(epochs, train_dataset, test_dataset, model, optimizer, random_ve
                                                                                                   elbo,
                                                                                                   end_time - start_time))
                 generate_and_save_images(model, epoch, random_vector_for_generation, vae_location, vae_generated_filename, maze_size)
+            if epoch % 10 == 0:
+                save_model_weights(model, vae_model_file)
 

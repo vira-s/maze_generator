@@ -119,7 +119,7 @@ public class GeneratorModelPanel extends JPanel {
         algorithmPanel.setLayout(new GridLayout(0, 1));
         algorithmPanel.setBorder(WindowUtils.createTitledBorder("Generate with algorithm"));
 
-        JLabel mazeSizeLabel = new JLabel("Size of the mazes: ");
+        JLabel mazeSizeLabel = new JLabel("Size of the maze: ");
         mazeSizeSpinner = new JSpinner(WindowUtils.getMazeSizeSpinnerModel());
 
         algorithmPanel.add(mazeSizeLabel);
@@ -168,7 +168,7 @@ public class GeneratorModelPanel extends JPanel {
                 1));
 
 
-        JLabel vaeMazeSizeLabel = new JLabel("Size of the mazes: ");
+        JLabel vaeMazeSizeLabel = new JLabel("Size of the maze: ");
         vaeMazeSizeSpinner = new JSpinner(WindowUtils.getMazeSizeSpinnerModel());
         vaeDefaultModelCheckBox = new JCheckBox("Generate with default model if present");
 
