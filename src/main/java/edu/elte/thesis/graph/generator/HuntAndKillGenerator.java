@@ -74,7 +74,8 @@ public class HuntAndKillGenerator extends MazeGenerator {
 
         Optional<CellNode> unvisitedCellWithVisitedNeighbour = maze.getNodes().stream()
                 .filter(cell -> !cell.isVisited()
-                        && maze.findNeighboursOf(cell.getEntity()).stream().anyMatch(CellNode::isVisited))
+                        && maze.findNeighboursOf(cell.getEntity()).stream()
+                        .anyMatch(CellNode::isVisited))
                 .findAny();
 
         unvisitedCellWithVisitedNeighbour.ifPresent(cell -> LOGGER.info("Found an unvisited cell with a visited neighbour: ({},{})", cell.getColumn(), cell.getRow()));

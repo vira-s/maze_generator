@@ -115,8 +115,6 @@ public class MazeController {
 
     private PythonRunner pythonRunner;
 
-    private JPanel progressPanel;
-
     public MazeController(MazeWindow parentWindow) {
         this.parentWindow = parentWindow;
 
@@ -316,6 +314,26 @@ public class MazeController {
         }
     }
 
+    public MazeBoardPanel getMazeBoard() {
+        return mazeBoard;
+    }
+
+    public MazeInfoPanel getInfoPanel() {
+        return infoPanel;
+    }
+
+    public MazePreferenceTabbedPane getMazePreferenceTabbedPane() {
+        return mazePreferenceTabbedPane;
+    }
+
+    public MazeWindow getParentWindow() {
+        return parentWindow;
+    }
+
+    public PythonRunner getPythonRunner() {
+        return pythonRunner;
+    }
+
     private Maze getGeneratedResult(String generatedMazeFileWithPath) throws IOException {
         File generatedMazes = new File(generatedMazeFileWithPath);
         ReversedLinesFileReader reversedLinesFileReader = new ReversedLinesFileReader(generatedMazes, Charset.forName("UTF-8"));
@@ -396,26 +414,6 @@ public class MazeController {
 
         LOGGER.info("Couldn't find any matching files.");
         return Optional.empty();
-    }
-
-    public MazeBoardPanel getMazeBoard() {
-        return mazeBoard;
-    }
-
-    public MazeInfoPanel getInfoPanel() {
-        return infoPanel;
-    }
-
-    public MazePreferenceTabbedPane getMazePreferenceTabbedPane() {
-        return mazePreferenceTabbedPane;
-    }
-
-    public MazeWindow getParentWindow() {
-        return parentWindow;
-    }
-
-    public PythonRunner getPythonRunner() {
-        return pythonRunner;
     }
 
     private void initWindowElements() {

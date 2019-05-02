@@ -112,7 +112,8 @@ public class Node<T> {
         return children;
     }
 
-    @Override public boolean equals(Object other) {
+    @Override
+    public boolean equals(Object other) {
         if (this == other) {
             return true;
         }
@@ -124,7 +125,8 @@ public class Node<T> {
                 && Objects.equals(entity, node.entity);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(root, entity);
     }
 

@@ -36,21 +36,21 @@ public class MazeGeneratorRunner {
 
     private static final int SECONDS_PER_HOUR = SECONDS_PER_MINUTE * MINUTES_PER_HOUR;
 
-    private static final HuntAndKillGenerator huntAndKillGenerator = new HuntAndKillGenerator();
+    private static final HuntAndKillGenerator HUNT_AND_KILL_GENERATOR = new HuntAndKillGenerator();
 
-    private static final GrowingTreeGenerator growingTreeGenerator = new GrowingTreeGenerator();
+    private static final GrowingTreeGenerator GROWING_TREE_GENERATOR = new GrowingTreeGenerator();
 
-    private static final RandomWalkGenerator randomWalkGenerator = new RandomWalkGenerator();
+    private static final RandomWalkGenerator RANDOM_WALK_GENERATOR = new RandomWalkGenerator();
 
-    private static final SidewinderGenerator sidewinderGenerator = new SidewinderGenerator();
+    private static final SidewinderGenerator SIDEWINDER_GENERATOR = new SidewinderGenerator();
 
-    private static final RecursiveBacktrackerGenerator recursiveBacktrackerGenerator = new RecursiveBacktrackerGenerator();
+    private static final RecursiveBacktrackerGenerator RECURSIVE_BACKTRACKER_GENERATOR = new RecursiveBacktrackerGenerator();
 
-    private static final StopWatch stopWatch = new StopWatch();
+    private static final StopWatch STOP_WATCH = new StopWatch();
 
-    private static final BinarizedMaze binarizedMaze = new BinarizedMaze();
+    private static final BinarizedMaze BINARIZED_MAZE = new BinarizedMaze();
 
-    private static final JsonObjectMarshaller jsonObjectMarshaller = new JsonObjectMarshaller(BinarizedMaze.class);
+    private static final JsonObjectMarshaller JSON_OBJECT_MARSHALLER = new JsonObjectMarshaller(BinarizedMaze.class);
 
     public static Maze generate(MazeGeneratorAlgorithm algorithm,
                                 int size,
@@ -62,19 +62,19 @@ public class MazeGeneratorRunner {
 
         switch (algorithm) {
             case HUNT_AND_KILL:
-                maze = run(size, huntAndKillGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                maze = run(size, HUNT_AND_KILL_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
             case GROWING_TREE:
-                maze = run(size, growingTreeGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                maze = run(size, GROWING_TREE_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
             case RANDOM_WALK:
-                maze = run(size, randomWalkGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                maze = run(size, RANDOM_WALK_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
             case SIDEWINDER:
-                maze = run(size, sidewinderGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                maze = run(size, SIDEWINDER_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
             case RECURSIVE_BACKTRACKER:
-                maze = run(size, recursiveBacktrackerGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                maze = run(size, RECURSIVE_BACKTRACKER_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown algorithm: " + algorithm);
@@ -91,19 +91,19 @@ public class MazeGeneratorRunner {
 
         switch (algorithm) {
             case HUNT_AND_KILL:
-                run(count, size, huntAndKillGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                run(count, size, HUNT_AND_KILL_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
             case GROWING_TREE:
-                run(count, size, growingTreeGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                run(count, size, GROWING_TREE_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
             case RANDOM_WALK:
-                run(count, size, randomWalkGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                run(count, size, RANDOM_WALK_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
             case SIDEWINDER:
-                run(count, size, sidewinderGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                run(count, size, SIDEWINDER_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
             case RECURSIVE_BACKTRACKER:
-                run(count, size, recursiveBacktrackerGenerator, algorithm.getShortName(), mazeFile, runTimesFile);
+                run(count, size, RECURSIVE_BACKTRACKER_GENERATOR, algorithm.getShortName(), mazeFile, runTimesFile);
                 break;
         }
 
@@ -139,12 +139,12 @@ public class MazeGeneratorRunner {
                             String algorithm,
                             File mazeFile,
                             File runTimesFile) {
-        stopWatch.start();
+        STOP_WATCH.start();
         runGenerate(count, size, generator, mazeFile);
-        stopWatch.stop();
+        STOP_WATCH.stop();
 
         saveRunTimesToFile(algorithm, size, count, runTimesFile);
-        stopWatch.reset();
+        STOP_WATCH.reset();
     }
 
     private static Maze run(int size,
@@ -152,12 +152,12 @@ public class MazeGeneratorRunner {
                             String algorithm,
                             File mazeFile,
                             File runTimesFile) {
-        stopWatch.start();
+        STOP_WATCH.start();
         Maze maze = runGenerate(size, generator, mazeFile);
-        stopWatch.stop();
+        STOP_WATCH.stop();
 
         saveRunTimesToFile(algorithm, size, 0, runTimesFile);
-        stopWatch.reset();
+        STOP_WATCH.reset();
         return maze;
     }
 
@@ -165,7 +165,7 @@ public class MazeGeneratorRunner {
                                            int size,
                                            int count,
                                            File runTimesFile) {
-        String time = convertNanosecondsToReadableFormat(stopWatch.getNanoTime());
+        String time = convertNanosecondsToReadableFormat(STOP_WATCH.getNanoTime());
 
         StringBuilder data = new StringBuilder();
         data.append("[")
@@ -216,7 +216,7 @@ public class MazeGeneratorRunner {
     }
 
     private static void saveMazeToFile(Maze maze, File mazeFile) {
-        String data = jsonObjectMarshaller.marshal(binarizedMaze.binarizeMaze(maze));
+        String data = JSON_OBJECT_MARSHALLER.marshal(BINARIZED_MAZE.binarizeMaze(maze));
         try {
             FileUtils.writeStringToFile(mazeFile, data + "\n", StandardCharsets.UTF_8, true);
         } catch (IOException exception) {

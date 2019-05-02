@@ -38,8 +38,6 @@ public class SubmitButtonAction extends AbstractAction {
 
     private File trainingData;
 
-    private File modelFile;
-
     private List<MazeGeneratorAlgorithm> algorithmNames;
 
     public SubmitButtonAction(ModelTrainerAndMazeGenerationPanel parent) {

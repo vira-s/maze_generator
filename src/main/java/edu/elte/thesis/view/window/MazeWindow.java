@@ -43,6 +43,7 @@ public class MazeWindow extends JFrame {
 
         mazePreferenceTabbedPane.setVisible(true);
         mazeBoard.setVisible(true);
+        infoPanel.setVisible(true);
     }
 
     private void setWindowsBasics() {
