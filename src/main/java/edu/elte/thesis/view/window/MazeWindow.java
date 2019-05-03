@@ -1,7 +1,6 @@
 package edu.elte.thesis.view.window;
 
 import edu.elte.thesis.controller.MazeController;
-import edu.elte.thesis.view.event.MainWindowListener;
 import edu.elte.thesis.view.window.preferences.MazePreferenceTabbedPane;
 
 import javax.swing.JFrame;
@@ -18,8 +17,6 @@ public class MazeWindow extends JFrame {
 
     private static final int WINDOW_HEIGHT = 800;
 
-    private MazeController mazeController;
-
     private MazeInfoPanel infoPanel;
 
     private MazeBoardPanel mazeBoard;
@@ -27,8 +24,11 @@ public class MazeWindow extends JFrame {
     private MazePreferenceTabbedPane mazePreferenceTabbedPane;
 
     public MazeWindow() {
-        mazeController = new MazeController(this);
-        setWindowsBasics();
+        MazeController mazeController = new MazeController(this);
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(mazeController);
+
+        setDimensions();
 
         infoPanel = mazeController.createInfoPanel();
         mazePreferenceTabbedPane = mazeController.createMazePreferenceTabbedPane();
@@ -46,16 +46,6 @@ public class MazeWindow extends JFrame {
         infoPanel.setVisible(true);
     }
 
-    private void setWindowsBasics() {
-        setWindowActionPreferences();
-        setDimensions();
-    }
-
-    private void setWindowActionPreferences() {
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new MainWindowListener(mazeController));
-    }
-
     private void setDimensions() {
         setResizable(false);
         setPreferredSize(new Dimension(WINDOW_WIDTH, WINDOW_HEIGHT));
@@ -63,5 +53,17 @@ public class MazeWindow extends JFrame {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         setLocation(screenSize.width / 2 - WINDOW_WIDTH / 2,
                 screenSize.height / 2 - WINDOW_HEIGHT / 2);
+    }
+
+    public MazeInfoPanel getInfoPanel() {
+        return infoPanel;
+    }
+
+    public MazeBoardPanel getMazeBoard() {
+        return mazeBoard;
+    }
+
+    public MazePreferenceTabbedPane getMazePreferenceTabbedPane() {
+        return mazePreferenceTabbedPane;
     }
 }

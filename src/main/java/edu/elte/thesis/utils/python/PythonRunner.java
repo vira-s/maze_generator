@@ -119,7 +119,9 @@ public class PythonRunner extends SwingWorker<Integer, String> {
         if (status == 0 || status == 5) {
             LOGGER.info("Process finished with status: {}. Updating maze board...", status);
 
-            controller.getInfoPanel().stopProgress();
+            controller.getParentWindow()
+                    .getInfoPanel()
+                    .stopProgress();
 
             controller.handleUpdateMazeBoardAndMazeInfo(
                     Integer.parseInt(command.get(command.indexOf("--dimension") + 1)),
@@ -127,7 +129,9 @@ public class PythonRunner extends SwingWorker<Integer, String> {
                     command.contains("--generate_only") || status == 5);
         } else {
             LOGGER.error("Couldn't generate maze");
-            controller.getInfoPanel().stopProgress("Couldn't generate maze");
+            controller.getParentWindow()
+                    .getInfoPanel()
+                    .stopProgress("Couldn't generate maze");
         }
     }
 }
