@@ -3,7 +3,7 @@ package edu.elte.thesis.graph.utils;
 import edu.elte.thesis.model.Maze;
 import edu.elte.thesis.model.cell.WallPosition;
 import edu.elte.thesis.model.graph.CellNode;
-import edu.elte.thesis.utils.DummyFactory;
+import edu.elte.thesis.testutils.DummyFactory;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.Assert;

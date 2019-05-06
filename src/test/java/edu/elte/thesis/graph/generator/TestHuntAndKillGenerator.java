@@ -7,7 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
-import edu.elte.thesis.utils.DummyFactory;
+import edu.elte.thesis.testutils.DummyFactory;
 
 /**
  * @author Viktoria Sinkovics

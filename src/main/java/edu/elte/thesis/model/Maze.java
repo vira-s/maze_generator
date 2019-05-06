@@ -129,15 +129,24 @@ public class Maze {
      * @return The root
      */
     public CellNode findRoot() throws MultipleRootsException {
-        List<CellNode> rootCells = this.nodes.stream()
-                .filter(Node::isRoot)
-                .collect(Collectors.toList());
+        List<CellNode> rootCells = this.findAllRoots();
 
         if (rootCells.size() != 1) {
             throw new MultipleRootsException("Exactly one root cell is required/allowed. " + rootCells);
         }
 
         return rootCells.get(0);
+    }
+
+    /**
+     * UtilityMethod to find every root cell.
+     *
+     * @return The roots
+     */
+    public List<CellNode> findAllRoots() {
+        return this.nodes.stream()
+                .filter(Node::isRoot)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -220,4 +229,5 @@ public class Maze {
                 + ", nodes=" + nodes
                 + '}';
     }
+
 }

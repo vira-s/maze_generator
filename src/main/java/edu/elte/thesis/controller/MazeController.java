@@ -61,7 +61,7 @@ public class MazeController implements WindowListener {
 
     private static final String GENERATED_FOLDER = "generated\\";
 
-    private static final String STATISTICS_FOLDR = "statistics\\";
+    private static final String STATISTICS_FOLDER = "statistics\\";
 
     private static final String VAE_FOLDER = "cvae\\";
 
@@ -93,7 +93,7 @@ public class MazeController implements WindowListener {
 
     // Statistics
     private static final String STATISTICS_FILENAME = "algorithm_statistics.txt";
-    private static final String STATISTICS_FILE_LOCATION = GENERATION_FOLDER + STATISTICS_FOLDR + STATISTICS_FILENAME;
+    private static final String STATISTICS_FILE_LOCATION = GENERATION_FOLDER + STATISTICS_FOLDER + STATISTICS_FILENAME;
 
     private static final String VAE_STATISTICS_FILENAME = "cvae_statistics.txt";
 
@@ -155,7 +155,7 @@ public class MazeController implements WindowListener {
         createMazeBoard(maze);
         createMazeInfo(GENERATED_FOLDER + DEFAULT_GENERATE_SINGLE_MAZE_FILENAME
                         .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize),
-                STATISTICS_FOLDR + STATISTICS_FILENAME);
+                STATISTICS_FOLDER + STATISTICS_FILENAME);
 
         parentWindow.revalidate();
         parentWindow.repaint();

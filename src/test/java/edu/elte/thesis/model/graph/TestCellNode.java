@@ -1,13 +1,12 @@
 package edu.elte.thesis.model.graph;
 
 import edu.elte.thesis.model.cell.MazeCell;
-import edu.elte.thesis.model.graph.CellNode;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.BlockJUnit4ClassRunner;
-import edu.elte.thesis.utils.DummyFactory;
+import edu.elte.thesis.testutils.DummyFactory;
 
 /**
  * @author Viktoria Sinkovics

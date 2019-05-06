@@ -8,7 +8,9 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.util.Assert;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -67,6 +69,22 @@ public class DepthFirstSearchRunner {
         // TODO only use in debug mode
         // maze.printMazeGraph();
         return true;
+    }
+
+    public static Set<CellNode> collectAllNodesForRoot(CellNode root) {
+        Set<CellNode> visitedCells = new HashSet<>();
+        Stack<CellNode> stack = new Stack<>();
+        stack.push(root);
+
+        while (!stack.isEmpty()) {
+            CellNode currentCell = stack.pop();
+            if (!visitedCells.contains(currentCell)) {
+                visitedCells.add(currentCell);
+                currentCell.getChildren().forEach(child -> stack.push((CellNode) child));
+            }
+        }
+
+        return visitedCells;
     }
 
 

@@ -1,4 +1,4 @@
-package edu.elte.thesis.utils;
+package edu.elte.thesis.testutils;
 
 import edu.elte.thesis.model.cell.MazeCell;
 import edu.elte.thesis.model.cell.WallPosition;

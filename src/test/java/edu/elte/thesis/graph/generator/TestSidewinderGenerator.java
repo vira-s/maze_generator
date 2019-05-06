@@ -2,7 +2,7 @@ package edu.elte.thesis.graph.generator;
 
 import edu.elte.thesis.graph.utils.DepthFirstSearchRunner;
 import edu.elte.thesis.model.Maze;
-import edu.elte.thesis.utils.DummyFactory;
+import edu.elte.thesis.testutils.DummyFactory;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

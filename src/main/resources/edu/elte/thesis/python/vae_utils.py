@@ -4,7 +4,6 @@ import tensorflow as tf
 import json
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
 import imageio
 import glob
 import PIL
@@ -118,6 +117,7 @@ def generate_and_save_images(model, epoch, test_input, vae_location, vae_generat
 
     # tight_layout minimizes the overlap between 2 sub-plots
     plt.savefig(os.path.join(vae_location, '{:03d}_image_at_epoch_{:04d}.png'.format(maze_size, epoch)))
+    plt.close('all')
 
 
 def display_image(epoch_no, vae_location, maze_size):
