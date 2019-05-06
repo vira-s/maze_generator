@@ -220,7 +220,7 @@ public class MazeGeneratorRunner {
         try {
             FileUtils.writeStringToFile(mazeFile, data + "\n", StandardCharsets.UTF_8, true);
         } catch (IOException exception) {
-            LOGGER.error("Something went wrong while writing to file {}{}.", mazeFile);
+            LOGGER.error("Something went wrong while writing to file {}.", mazeFile);
             exception.printStackTrace();
         }
     }

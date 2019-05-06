@@ -30,9 +30,9 @@ public class MazeWindow extends JFrame {
 
         setDimensions();
 
-        infoPanel = mazeController.createInfoPanel();
-        mazePreferenceTabbedPane = mazeController.createMazePreferenceTabbedPane();
         mazeBoard = mazeController.createDefaultMazeBoard();
+        mazePreferenceTabbedPane = mazeController.createMazePreferenceTabbedPane();
+        infoPanel = mazeController.createInfoPanel();
 
         add(infoPanel, BorderLayout.NORTH);
         add(mazePreferenceTabbedPane, BorderLayout.WEST);

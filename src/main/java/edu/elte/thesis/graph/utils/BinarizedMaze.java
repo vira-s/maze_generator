@@ -109,10 +109,6 @@ public class BinarizedMaze {
      * Since it isn't ensured that the mazes need to be acyclic and/or connected, 
      * the cell's parent field won't be populated.
      *
-     * TODO Refactor BinarizedMaze to handle disconnected mazes.
-     *  So far if any part of the maze is not reachable from (0,0), it will be left untouched
-     *  and the connections between any disconnected cell (from the 'main' graph) won't be saved.
-     *
      * Note: The shape of the maze can be validated with the {@link edu.elte.thesis.graph.utils.DepthFirstSearchRunner}.
      *
      * @return The graph representation of a maze
@@ -317,8 +313,8 @@ public class BinarizedMaze {
         if (!currentCell.getChildren().contains(nextCell)
                 && !nextCell.getChildren().contains(currentCell)) {
             // nextCell.setParent(currentCell);
-            currentCell.addChild(nextCell);
             unfinishedCells.add(nextCell);
+            currentCell.addChild(nextCell);
         }
     }
 
@@ -372,8 +368,8 @@ public class BinarizedMaze {
 
     /**
      * Utility method to reverse a binary maze into a graph.
-     * Extracts the 'core' of the binarized maze which is the state of the binary maze before the extra columns and rows were appended
-     * in order to have width/height divisible by 4.
+     * Extracts the 'core' of the binarized maze which is the state of the binary maze before the extra
+     * columns and rows were appended in order to have width/height divisible by 4.
      *
      * @param binaryMaze The binary maze with possible extra rows and/or columns
      *

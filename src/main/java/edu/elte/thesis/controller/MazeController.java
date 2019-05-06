@@ -96,6 +96,7 @@ public class MazeController implements WindowListener {
     private static final String STATISTICS_FILE_LOCATION = GENERATION_FOLDER + STATISTICS_FOLDR + STATISTICS_FILENAME;
 
     private static final String VAE_STATISTICS_FILENAME = "cvae_statistics.txt";
+
     private static final String DIMENSION = "--dimension";
 
     private static final String MODEL_FILE = "--model_file";
@@ -110,7 +111,14 @@ public class MazeController implements WindowListener {
 
     private MazeWindow parentWindow;
 
+    private MazeInfoPanel infoPanel;
+
+    private MazeBoardPanel mazeBoard;
+
+    private MazePreferenceTabbedPane mazePreferenceTabbedPane;
+
     private PythonRunner pythonRunner;
+
 
     public MazeController(MazeWindow parentWindow) {
         super();
@@ -119,16 +127,17 @@ public class MazeController implements WindowListener {
     }
 
     public MazePreferenceTabbedPane createMazePreferenceTabbedPane() {
-        return new MazePreferenceTabbedPane(this);
+        mazePreferenceTabbedPane = new MazePreferenceTabbedPane(this);
+        return mazePreferenceTabbedPane;
     }
 
     public MazeBoardPanel createDefaultMazeBoard() {
-        MazeBoardPanel mazeBoard = parentWindow.getMazeBoard();
         if (Objects.nonNull(mazeBoard)) {
             mazeBoard.setVisible(false);
         }
 
-        return new MazeBoardPanel(new Maze(DEFAULT_MAZE_SIZE, DEFAULT_MAZE_SIZE));
+        mazeBoard = new MazeBoardPanel(new Maze(DEFAULT_MAZE_SIZE, DEFAULT_MAZE_SIZE));
+        return mazeBoard;
     }
 
     public MazeInfoPanel createInfoPanel() {
@@ -148,7 +157,6 @@ public class MazeController implements WindowListener {
                         .replace(SIZE_PLACEHOLDER, mazeSize + "x" + mazeSize),
                 STATISTICS_FOLDR + STATISTICS_FILENAME);
 
-        parentWindow.getMazeBoard().setVisible(true);
         parentWindow.revalidate();
         parentWindow.repaint();
     }
@@ -278,7 +286,7 @@ public class MazeController implements WindowListener {
 
     public void updateProgress(String line, int currentEpoch) {
         if (line.startsWith("Epoch: ")) {
-            int totalEpochs = (Integer) parentWindow.getMazePreferenceTabbedPane()
+            int totalEpochs = (Integer) mazePreferenceTabbedPane
                     .getModelTrainerAndMazeGenerationPanel()
                     .getGeneratorModelHandlerPanel()
                     .getEpochSpinner()
@@ -290,7 +298,7 @@ public class MazeController implements WindowListener {
 
             if (currentEpoch == 1) {
                 LOGGER.info(text);
-                parentWindow.getInfoPanel().setProgress(estimatedTime, currentEpoch, totalEpochs);
+                infoPanel.setProgress(estimatedTime, currentEpoch, totalEpochs);
             } else if (currentEpoch != 0) {
                 String newText = " "
                         + currentEpoch
@@ -298,7 +306,7 @@ public class MazeController implements WindowListener {
                         + totalEpochs
                         + " epochs finished.";
                 LOGGER.info(text + newText);
-                parentWindow.getInfoPanel().setProgress(estimatedTime, currentEpoch, totalEpochs);
+                infoPanel.setProgress(estimatedTime, currentEpoch, totalEpochs);
             }
         }
     }
@@ -346,9 +354,10 @@ public class MazeController implements WindowListener {
     }
 
     private void runCommand(Map<String, String> arguments) {
-        parentWindow.getInfoPanel().setProgressLabel("Running VAE...");
+        infoPanel.setProgressLabel("Running VAE...");
         parentWindow.revalidate();
         parentWindow.repaint();
+
         pythonRunner = new PythonRunner(arguments, this);
         pythonRunner.execute();
     }
@@ -368,9 +377,6 @@ public class MazeController implements WindowListener {
 
     private void updateMazeBoard(Maze maze) {
         createMazeBoard(maze);
-
-        parentWindow.getMazeBoard().setVisible(true);
-        parentWindow.getInfoPanel().setVisible(true);
     }
 
     private void updateMazeBoardAndInfoPanel(Maze maze, int mazeSize) {
@@ -389,8 +395,6 @@ public class MazeController implements WindowListener {
                     VAE_FOLDER + VAE_STATISTICS_FILENAME,
                     vaeGeneratedFile);
         }
-        parentWindow.getMazeBoard().setVisible(true);
-        parentWindow.getInfoPanel().setVisible(true);
 
         parentWindow.revalidate();
         parentWindow.repaint();
@@ -453,9 +457,6 @@ public class MazeController implements WindowListener {
 
 
     private MazeInfoPanel createMazeInfo(String mazeFile, String statisticsFile, String vaeFile) {
-        MazeInfoPanel infoPanel = parentWindow.getInfoPanel();
-        MazeBoardPanel mazeBoard = parentWindow.getMazeBoard();
-
         if (Objects.nonNull(infoPanel)) {
             infoPanel.setVisible(false);
             parentWindow.remove(infoPanel);
@@ -468,18 +469,22 @@ public class MazeController implements WindowListener {
                 statisticsFile,
                 vaeFile);
 
+        infoPanel.setVisible(true);
+        parentWindow.add(infoPanel, BorderLayout.NORTH);
+
+        parentWindow.validate();
+        parentWindow.pack();
         return infoPanel;
     }
 
     private void createMazeBoard(Maze maze) {
-        MazeBoardPanel mazeBoard = parentWindow.getMazeBoard();
-
         if (Objects.nonNull(mazeBoard)) {
             mazeBoard.setVisible(false);
             parentWindow.remove(mazeBoard);
         }
         mazeBoard = new MazeBoardPanel(maze);
 
+        mazeBoard.setVisible(true);
         parentWindow.add(mazeBoard, BorderLayout.CENTER);
         parentWindow.validate();
         parentWindow.pack();

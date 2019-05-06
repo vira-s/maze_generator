@@ -4,11 +4,7 @@ from __future__ import absolute_import, division, print_function
 import tensorflow as tf
 
 import argparse
-import sys
 import os
-import time
-import glob
-import datetime
 import vae_utils as utils
 from cvae import CVAE
 
@@ -53,7 +49,7 @@ else:
 random_vector_for_generation = tf.random_normal(shape=[num_examples_to_generate, latent_dim])
 
 if arguments.generate_only:
-    utils.generate_and_save_images(model, 
+    utils.generate_and_save_images(model,
                                    0,
                                    random_vector_for_generation,
                                    vae_location,
@@ -78,13 +74,13 @@ else:
     optimizer = tf.train.AdamOptimizer(learning_rate=1e-4)
 
     vae_statistics_file = os.path.join(statistics_location, "cvae_statistics.txt")
-    utils.train_model(arguments.epochs, 
-                      train_dataset, 
-                      test_dataset, 
-                      model, 
-                      optimizer, 
-                      random_vector_for_generation, 
-                      vae_statistics_file, 
+    utils.train_model(arguments.epochs,
+                      train_dataset,
+                      test_dataset,
+                      model,
+                      optimizer,
+                      random_vector_for_generation,
+                      vae_statistics_file,
                       vae_location,
                       vae_generated_filename,
                       arguments.dimension,
@@ -93,4 +89,3 @@ else:
 
     if not arguments.generate_only:
         utils.save_model_weights(model, vae_model_file)
-    

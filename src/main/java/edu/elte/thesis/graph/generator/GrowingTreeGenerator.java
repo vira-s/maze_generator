@@ -20,7 +20,7 @@ public class GrowingTreeGenerator extends MazeGenerator {
 
     private static final Logger LOGGER = LogManager.getLogger(GrowingTreeGenerator.class);
 
-    List<CellNode> carvedCells;
+    private List<CellNode> carvedCells;
 
     public GrowingTreeGenerator() {
         carvedCells = new ArrayList<>();
@@ -57,7 +57,8 @@ public class GrowingTreeGenerator extends MazeGenerator {
                 nextCell.markAsVisited();
                 carvedCells.add(nextCell);
             } else {
-                LOGGER.info("No unvisited neighbours were found for current cell=({},{}), removing from list.", currentCell.getColumn(), currentCell.getRow());
+                LOGGER.info("No unvisited neighbours were found for current cell=({},{}), removing from list.",
+                        currentCell.getColumn(), currentCell.getRow());
                 carvedCells.remove(currentCell);
             }
 
