@@ -72,7 +72,7 @@ public class TestMazeDataExtractor {
      * Remove @Ignore if a new file needs to be created.
      * Feel free to rename the file.
      */
-//    @Ignore
+    @Ignore
     @Test
     public void testCalculateLongestWalksAndDisconnectedParts_50x50() {
         String filename = GENERATION_FOLDER + CVAE_FOLDER
