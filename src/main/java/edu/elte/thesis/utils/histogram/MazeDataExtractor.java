@@ -56,6 +56,7 @@ public class MazeDataExtractor {
             LOGGER.info("Maze count: {}", mazes.size());
 
             for (Maze maze : mazes) {
+                LOGGER.info("Maze size: {}x{}", maze.getColumns(), maze.getRows());
                 List<CellNode> roots = maze.findAllRoots();
                 disconnectedSubgraphCount.add(roots.size());
                 LOGGER.info("Root count: {}", roots.size());

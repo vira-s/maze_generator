@@ -95,7 +95,7 @@ public class BinarizedMaze {
             this.binarizedMaze.add(generateRowsBottomPart(maze, columns, row, extraElementsToTopRightBottomLeftHeader.get(3), extraElementsToTopRightBottomLeftHeader.get(1)));
         }
 
-        if (extraElementsToTopRightBottomLeftHeader.get(2)  > 0) {
+        if (extraElementsToTopRightBottomLeftHeader.get(2) > 0) {
             for (int i = 0; i < extraElementsToTopRightBottomLeftHeader.get(2); ++i) {
                 this.binarizedMaze.add(StringUtils.repeat(WALL, extraElementsToTopRightBottomLeftHeader.get(4)));
             }

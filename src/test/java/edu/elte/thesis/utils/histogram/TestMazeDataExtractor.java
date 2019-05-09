@@ -26,7 +26,7 @@ public class TestMazeDataExtractor {
      */
     @Ignore
     @Test
-    public void testCalculateLongestWalk_5x5() {
+    public void testCalculateLongestWalksAndDisconnectedParts_5x5() {
         String filename = GENERATION_FOLDER + CVAE_FOLDER
                 // + "generated_cvae_mazes_5x5.txt";
                 + TRAINED_FILENAME.replace(SIZE_PLACEHOLDER, "5x5");
@@ -42,7 +42,7 @@ public class TestMazeDataExtractor {
      */
     @Ignore
     @Test
-    public void testCalculateLongestWalk_10x10() {
+    public void testCalculateLongestWalksAndDisconnectedParts_10x10() {
         String filename = GENERATION_FOLDER + CVAE_FOLDER
                  // + "generated_cvae_mazes_10x10.txt";
                  + TRAINED_FILENAME.replace(SIZE_PLACEHOLDER, "10x10");
@@ -58,7 +58,7 @@ public class TestMazeDataExtractor {
      */
     @Ignore
     @Test
-    public void testCalculateLongestWalk_20x20() {
+    public void testCalculateLongestWalksAndDisconnectedParts_20x20() {
         String filename = GENERATION_FOLDER + CVAE_FOLDER
                 // + "generated_cvae_mazes_20x20.txt";
                 + TRAINED_FILENAME.replace(SIZE_PLACEHOLDER, "20x20");
@@ -72,12 +72,12 @@ public class TestMazeDataExtractor {
      * Remove @Ignore if a new file needs to be created.
      * Feel free to rename the file.
      */
-    @Ignore
+//    @Ignore
     @Test
-    public void testCalculateLongestWalk_50x50() {
+    public void testCalculateLongestWalksAndDisconnectedParts_50x50() {
         String filename = GENERATION_FOLDER + CVAE_FOLDER
-                // + "generated_cvae_mazes_50x50.txt";
-                + TRAINED_FILENAME.replace(SIZE_PLACEHOLDER, "50x50");
+                 + "generated_cvae_mazes_50x50.txt";
+//                + TRAINED_FILENAME.replace(SIZE_PLACEHOLDER, "50x50");
 
         boolean result = MazeDataExtractor.calculateLongestWalksAndDisconnectedParts(filename, 50);
         Assert.assertTrue(result);

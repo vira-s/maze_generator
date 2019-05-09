@@ -22,7 +22,6 @@ parser._action_groups.append(optional)
 arguments = parser.parse_args()
 
 base_dir = os.path.join(os.path.expanduser('~'), 'maze_generator')
-statistics_location = os.path.join(base_dir, 'statistics')
 vae_location = os.path.join(base_dir, 'cvae')
 vae_model_file = os.path.join(vae_location, arguments.model_file)
 
