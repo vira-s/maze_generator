@@ -18,7 +18,7 @@
         <junit.version>4.10</junit.version>
         <mockito.version>2.10.0</mockito.version>
         <apache.lang3.version>3.4</apache.lang3.version>
-        <apache.io.version>2.6</apache.io.version>
+        <apache.io.version>2.14.0</apache.io.version>
         <jackson.version>2.9.8</jackson.version>
         <eclipselink.version>2.5.0</eclipselink.version>
         <jaxb.version>2.2.11</jaxb.version>
