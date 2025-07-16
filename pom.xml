@@ -13,7 +13,7 @@
         <maven.plugins.version>3.8.0</maven.plugins.version>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <spring.version>6.1.14</spring.version>
+        <spring.version>6.1.20</spring.version>
         <log4j.version>2.11.1</log4j.version>
         <junit.version>4.10</junit.version>
         <mockito.version>2.10.0</mockito.version>
